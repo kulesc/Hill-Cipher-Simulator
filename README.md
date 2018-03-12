@@ -21,7 +21,12 @@ After the build finishes a bunch of files will appear inside of `build` director
 
 To run previously built simulator execute:
 ```bash
-java -jar build/dist/Hill\ Cipher\ Simulator.jar
+java -jar build/dist/HillCipherSimulator.jar
+```
+
+Build also supports running the simulator as applet via Java Web Start. To do this execute:
+```bash
+javaws build/deploy/HillCipherSimulator.jnlp
 ```
 
 ## FAQ

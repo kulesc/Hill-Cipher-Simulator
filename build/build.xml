@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-	<project name="Hill Cipher Simulator" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
+	<project name="HillCipherSimulator" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
 	<target name="init-fx-tasks">
 		<path id="fxant">
 			<filelist>
@@ -22,7 +22,7 @@
 	
 		<mkdir dir="project" />
 		<copy todir="project">
-			<fileset dir="/Users/ivankulezic/workspaces/eclipse/tutorials/Hill Cipher Simulator">
+			<fileset dir="/Users/ivankulezic/workspaces/eclipse/tutorials/HillCipherSimulator">
 				<include name="src/**" />
 			</fileset>
 		</copy>
@@ -82,12 +82,12 @@
 	
 	
 		<fx:resources id="appRes">
-			<fx:fileset dir="dist" includes="Hill Cipher Simulator.jar"/>
+			<fx:fileset dir="dist" includes="HillCipherSimulator.jar"/>
 			<fx:fileset dir="dist" includes="libs/*"/>
 		</fx:resources>
 	
 		<fx:application id="fxApplication"
-			name="Hill Cipher Simulator"
+			name="HillCipherSimulator"
 			mainClass="rs.ac.bg.etf.cryptography.simulators.hillcipher.Main"
 			toolkit="fx"
 		/>
@@ -96,7 +96,7 @@
 	
 	
 	
-		<fx:jar destfile="dist/Hill Cipher Simulator.jar">
+		<fx:jar destfile="dist/HillCipherSimulator.jar">
 			<fx:application refid="fxApplication"/>
 			<fileset dir="build/classes">
 			</fileset>
@@ -104,7 +104,7 @@
 	
 			<manifest>
 				<attribute name="Implementation-Vendor" value="Ivan Kulezic"/>
-				<attribute name="Implementation-Title" value="Hill Cipher Simulator"/>
+				<attribute name="Implementation-Title" value="HillCipherSimulator"/>
 				<attribute name="Implementation-Version" value="0.0.1"/>
 				<attribute name="JavaFX-Feature-Proxy" value="None"/>
 			</manifest>
@@ -120,11 +120,11 @@
 			includeDT="false"
 			offlineAllowed="true"
 			outdir="${basedir}/deploy"
-			outfile="Hill Cipher Simulator" nativeBundles="all"
+			outfile="HillCipherSimulator" nativeBundles="exe"
 			updatemode="background" >
 	
 			<fx:platform basedir="${java.home}"/>
-			<fx:info title="Hill Cipher Simulator" vendor="Ivan Kulezic"/>
+			<fx:info title="HillCipherSimulator" vendor="Ivan Kulezic"/>
 	
 			<fx:application refId="fxApplication"/>
 			<fx:resources refid="appRes"/>
