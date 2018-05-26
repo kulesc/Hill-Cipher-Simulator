@@ -67,7 +67,7 @@ public class MainPage extends SceneCreator {
     private void startSimulation(ToggleGroup simulatorMode) {
         RadioButton selectedMode = (RadioButton) simulatorMode.getSelectedToggle();
         if (selectedMode.equals(encryption)) {
-            Main.switchScene(new EncryptionPage(window).getScene());
+            Main.switchScene(new EncryptionPageOne(window).getScene());
         } else if (selectedMode.equals(decryption)) {
             // TODO: Add switching to decryption scene
         }

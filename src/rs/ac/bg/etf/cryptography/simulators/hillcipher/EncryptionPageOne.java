@@ -7,6 +7,7 @@ import java.util.stream.IntStream;
 
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -20,18 +21,38 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class EncryptionPage extends SceneCreator {
+public class EncryptionPageOne extends SceneCreator {
 
-    private TextField keySizeInput;
+    private ComboBox<Integer> keySizeInput;
 
     private BorderPane layout;
+
+    private TextField plaintextInput;
 
     private List<TextField> key = new ArrayList<>();
 
     private Scene scene;
 
-    public EncryptionPage(Stage window) {
+    private ComboBox<String> fillCharacterPicker;
+
+    public EncryptionPageOne(Stage window) {
         super(window);
+    }
+
+    public String getFillCharacter() {
+        return fillCharacterPicker.getSelectionModel().getSelectedItem();
+    }
+
+    public Integer getKeySize() {
+        return keySizeInput.getSelectionModel().getSelectedItem();
+    }
+
+    public List<TextField> getKey() {
+        return key;
+    }
+
+    public String getPlaintext() {
+        return plaintextInput.getText();
     }
 
     @Override
@@ -58,20 +79,23 @@ public class EncryptionPage extends SceneCreator {
         grid.add(generateLetterMappingTable(), 0, 0, 6, 2);
 
         grid.add(new Label("Plaintext:"), 0, 2, 4, 1);
-        TextField plaintextInput = new TextField();
+        plaintextInput = new TextField();
         plaintextInput.setMinWidth(350);
         grid.add(plaintextInput, 0, 3, 4, 1);
         plaintextInput.setPromptText("Enter the message to be encrypted...");
+        plaintextInput.textProperty().addListener(
+                (observable, oldValue, newValue) -> limitPlainTextInput(plaintextInput, oldValue, newValue));
 
         grid.add(new Label("Key size:"), 4, 2, 1, 1);
-        keySizeInput = new TextField();
+        keySizeInput = new ComboBox<>();
+        keySizeInput.getItems().addAll(IntStream.range(2, 10).mapToObj(i -> i).collect(Collectors.toList()));
         keySizeInput.setMaxWidth(70);
-        keySizeInput.setText("2");
-        keySizeInput.textProperty().addListener((observable, oldValue, newValue) -> keySizeChanged());
+        keySizeInput.getSelectionModel().select(0);
+        keySizeInput.setOnAction(e -> keySizeChanged());
         grid.add(keySizeInput, 4, 3, 1, 1);
 
         grid.add(new Label("Fill character:"), 5, 2, 1, 1);
-        ComboBox<String> fillCharacterPicker = new ComboBox<>();
+        fillCharacterPicker = new ComboBox<>();
         grid.add(fillCharacterPicker, 5, 3, 1, 1);
 
         fillCharacterPicker.getItems().addAll(IntStream.rangeClosed('A', 'Z')
@@ -90,13 +114,15 @@ public class EncryptionPage extends SceneCreator {
         grid.setHgap(30);
         grid.setVgap(10);
 
-        int keySize = Integer.parseInt(keySizeInput.getText());
+        int keySize = keySizeInput.getSelectionModel().getSelectedItem();
         grid.add(new Label("Key"), 0, 0);
 
         for (int i = 0; i < keySize; i++) {
             for (int j = 0; j < keySize; j++) {
                 TextField keyCell = new TextField();
                 keyCell.setMaxWidth(40);
+                keyCell.textProperty()
+                        .addListener((observable, oldValue, newValue) -> limitKeyInput(keyCell, oldValue, newValue));
                 key.add(keyCell);
                 grid.add(keyCell, i, j + 1);
             }
@@ -107,17 +133,19 @@ public class EncryptionPage extends SceneCreator {
 
     private GridPane createBottomLayout() {
         GridPane grid = new GridPane();
-        grid.setPadding(new Insets(10, 10, 10, 10));
+        grid.setPadding(new Insets(10, 40, 20, 10));
         grid.setHgap(30);
         grid.setVgap(10);
+        grid.setAlignment(Pos.BOTTOM_RIGHT);
 
         Button encipher = new Button("Encipher");
+        encipher.setOnAction(e -> goToSecondPage());
         grid.add(encipher, 5, 0, 1, 1);
 
         return grid;
     }
 
-    private TableView<LetterMapping> generateLetterMappingTable() {
+    public static TableView<LetterMapping> generateLetterMappingTable() {
         TableView<LetterMapping> table = new TableView<>();
 
         table.getColumns().addAll(IntStream.rangeClosed('A', 'Z').mapToObj(character -> {
@@ -130,15 +158,44 @@ public class EncryptionPage extends SceneCreator {
         table.getItems().add(new LetterMapping());
         table.setFixedCellSize(30);
         table.prefHeightProperty().bind(Bindings.size(table.getItems()).multiply(table.getFixedCellSize()).add(30));
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         return table;
     }
 
     private void keySizeChanged() {
-        try {
-            layout.setCenter(createCentralLayout());
-            scene.setRoot(layout);
-        } catch (NumberFormatException e) {
+        layout.setCenter(createCentralLayout());
+        scene.setRoot(layout);
+    }
+
+    private static void limitKeyInput(TextField field, String oldValue, String newValue) {
+        if (!newValue.isEmpty()) {
+            try {
+                long value = Integer.parseInt(newValue);
+                if (value < 0 || value > 25 || (value == 0 && newValue.length() > 1))
+                    throw new Exception();
+                field.setText(newValue);
+            } catch (Exception e) {
+                field.clear();
+                field.setText(String.valueOf(oldValue));
+            }
         }
     }
+
+    private static void limitPlainTextInput(TextField field, String oldValue, String newValue) {
+        if (!newValue.isEmpty()) {
+            if (newValue.chars().allMatch(Character::isLetter)) {
+                field.setText(newValue);
+            } else {
+                field.clear();
+                field.setText(oldValue);
+            }
+        }
+    }
+
+    private void goToSecondPage() {
+        Main.switchScene(new EncryptionPageTwo(Main.window, getPlaintext(), getKeySize(), getFillCharacter(), getKey())
+                .getScene());
+    }
+
 }
