@@ -69,7 +69,7 @@ public class MainPage extends SceneCreator {
         if (selectedMode.equals(encryption)) {
             Main.switchScene(new EncryptionPageOne(window).getScene());
         } else if (selectedMode.equals(decryption)) {
-            // TODO: Add switching to decryption scene
+            Main.switchScene(new DecryptionPageOne(window).getScene());
         }
     }
 
