@@ -19,10 +19,15 @@
 	
 		<mkdir dir="externalLibs" />
 	
+		<copy todir="externalLibs">
+			<fileset dir="../libs">
+				<filename name="Jama-1.0.3.jar"/>
+			</fileset>
+		</copy>
 	
 		<mkdir dir="project" />
 		<copy todir="project">
-			<fileset dir="/Users/ivankulezic/workspaces/eclipse/tutorials/HillCipherSimulator">
+			<fileset dir="../">
 				<include name="src/**" />
 			</fileset>
 		</copy>
@@ -38,6 +43,7 @@
 		<!-- Copy project-libs references -->
 		<copy todir="build/libs">
 			<fileset dir="externalLibs">
+				<include name="Jama-1.0.3.jar"/>
 			</fileset>
 		</copy>
 	

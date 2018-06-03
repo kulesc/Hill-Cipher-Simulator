@@ -11,3 +11,5 @@ build/*
 # Macintosh
 .DS_Store
 
+# Except
+!libs/**/*.jar
