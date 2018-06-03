@@ -21,8 +21,10 @@ public abstract class SceneCreator {
 
         Menu fileMenu = new Menu("File");
         MenuItem exit = new MenuItem("Exit");
-        fileMenu.getItems().addAll(exit);
         exit.setOnAction(e -> window.close());
+        MenuItem restart = new MenuItem("Restart");
+        restart.setOnAction(e -> Main.switchScene(new MainPage(Main.window).getScene()));
+        fileMenu.getItems().addAll(restart, exit);
 
         Menu helpMenu = new Menu("Help");
         MenuItem about = new MenuItem("About");

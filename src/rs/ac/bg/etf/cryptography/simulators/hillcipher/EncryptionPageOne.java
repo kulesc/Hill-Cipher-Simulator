@@ -5,11 +5,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import Jama.Matrix;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -29,7 +33,7 @@ public class EncryptionPageOne extends SceneCreator {
 
     private TextField plaintextInput;
 
-    private List<TextField> key = new ArrayList<>();
+    private List<TextField> key;
 
     private Scene scene;
 
@@ -117,6 +121,8 @@ public class EncryptionPageOne extends SceneCreator {
         int keySize = keySizeInput.getSelectionModel().getSelectedItem();
         grid.add(new Label("Key"), 0, 0);
 
+        key = new ArrayList<>();
+        
         for (int i = 0; i < keySize; i++) {
             for (int j = 0; j < keySize; j++) {
                 TextField keyCell = new TextField();
@@ -124,7 +130,7 @@ public class EncryptionPageOne extends SceneCreator {
                 keyCell.textProperty()
                         .addListener((observable, oldValue, newValue) -> limitKeyInput(keyCell, oldValue, newValue));
                 key.add(keyCell);
-                grid.add(keyCell, i, j + 1);
+                grid.add(keyCell, j, i + 1);
             }
         }
 
@@ -185,7 +191,7 @@ public class EncryptionPageOne extends SceneCreator {
     private static void limitPlainTextInput(TextField field, String oldValue, String newValue) {
         if (!newValue.isEmpty()) {
             if (newValue.chars().allMatch(Character::isLetter)) {
-                field.setText(newValue);
+                field.setText(newValue.toUpperCase());
             } else {
                 field.clear();
                 field.setText(oldValue);
@@ -193,7 +199,46 @@ public class EncryptionPageOne extends SceneCreator {
         }
     }
 
+    private boolean isKeyFilled() {
+        for (TextField x : key) {
+            if (x.getText().isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static Matrix getKeyMatrix(int size, List<TextField> key) {
+        Matrix keyMatrix = new Matrix(size, size);
+
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                keyMatrix.set(i, j, Integer.parseInt(key.get(i * size + j).getText()));
+            }
+        }
+
+        return keyMatrix;
+    }
+
     private void goToSecondPage() {
+
+        if (plaintextInput.getText().isEmpty()) {
+            new Alert(AlertType.WARNING, "Plaintext field must not be empty.", ButtonType.OK).showAndWait();
+            return;
+        }
+
+        if (!isKeyFilled()) {
+            new Alert(AlertType.WARNING, "Key matrix must not be empty.", ButtonType.OK).showAndWait();
+            return;
+        }
+
+        Matrix m = getKeyMatrix(keySizeInput.getSelectionModel().getSelectedItem(), key);
+        if (!m.lu().isNonsingular()) {
+            new Alert(AlertType.WARNING, "Key matrix is not ivertible.", ButtonType.OK).showAndWait();
+            return;
+        }
+        
         Main.switchScene(new EncryptionPageTwo(Main.window, getPlaintext(), getKeySize(), getFillCharacter(), getKey())
                 .getScene());
     }
