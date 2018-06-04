@@ -19,26 +19,21 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class EncryptionPageTwo extends SceneCreator {
+public class DecryptionPageTwo extends SceneCreator {
+    private String ciphertext;
 
-    private Integer keySize;
-    private String plaintext;
-    private String fillCharacter;
-    private String filledPlaintext;
-    private String ciphertext = "";
-    private Map<Integer, List<Integer>> plaintextMatrixElements = new HashMap<>();
-    private Map<Integer, Matrix> plaintextMatrices = new HashMap<>();
+    private String plaintext = "";
+
+    private Matrix inverseKey;
+
+    private Map<Integer, List<Integer>> ciphertextMatrixElements = new HashMap<>();
     private Map<Integer, Matrix> ciphertextMatrices = new HashMap<>();
-    private List<TextField> key;
+    private Map<Integer, Matrix> plaintextMatrices = new HashMap<>();
 
-    public EncryptionPageTwo(Stage window, String plaintext, Integer keySize, String fillCharacter,
-            List<TextField> key) {
+    public DecryptionPageTwo(Stage window, String ciphertext, Matrix inverseKey) {
         super(window);
-        this.plaintext = plaintext;
-        this.keySize = keySize;
-        this.fillCharacter = fillCharacter;
-        this.key = key;
-        fillPlaintext();
+        this.ciphertext = ciphertext;
+        this.inverseKey = inverseKey;
     }
 
     @Override
@@ -47,7 +42,7 @@ public class EncryptionPageTwo extends SceneCreator {
         layout.setTop(createTopLayout());
         layout.setCenter(createCentralLayout());
         layout.setBottom(createBottomLayout());
-        
+
         ScrollPane x = new ScrollPane(layout);
         x.setHbarPolicy(ScrollBarPolicy.NEVER);
         x.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
@@ -67,26 +62,20 @@ public class EncryptionPageTwo extends SceneCreator {
 
         grid.add(EncryptionPageOne.generateLetterMappingTable(), 0, 0, 6, 2);
 
-        grid.add(new Label("Plaintext:"), 0, 2, 4, 1);
+        grid.add(new Label("Ciphertext:"), 0, 2, 4, 1);
         TextField plaintextInput = new TextField();
         plaintextInput.setMinWidth(350);
-        plaintextInput.setText(plaintext);
+        plaintextInput.setText(ciphertext);
         plaintextInput.setEditable(false);
         grid.add(plaintextInput, 0, 3, 4, 1);
 
         grid.add(new Label("Key size:"), 4, 2, 1, 1);
         ComboBox<Integer> keySizeInput = new ComboBox<>();
-        keySizeInput.getItems().add(keySize);
+        keySizeInput.getItems().add(inverseKey.getColumnDimension());
         keySizeInput.setMaxWidth(70);
         keySizeInput.getSelectionModel().select(0);
         grid.add(keySizeInput, 4, 3, 1, 1);
 
-        grid.add(new Label("Fill character:"), 5, 2, 1, 1);
-        ComboBox<String> fillCharacterPicker = new ComboBox<>();
-        grid.add(fillCharacterPicker, 5, 3, 1, 1);
-
-        fillCharacterPicker.getItems().add(fillCharacter);
-        fillCharacterPicker.getSelectionModel().select(fillCharacter);
         layout.getChildren().add(grid);
 
         return layout;
@@ -99,28 +88,28 @@ public class EncryptionPageTwo extends SceneCreator {
         grid.setHgap(10);
         grid.setVgap(10);
 
-        for (int i = 0; i < filledPlaintext.length() / keySize; i++) {
-            plaintextMatrixElements.put(i, new ArrayList<>());
+        for (int i = 0; i < ciphertext.length() / inverseKey.getColumnDimension(); i++) {
+            ciphertextMatrixElements.put(i, new ArrayList<>());
         }
 
-        for (int i = 0; i < filledPlaintext.length(); i++) {
-            plaintextMatrixElements.get(i / keySize).add(filledPlaintext.charAt(i) - 'A');
+        for (int i = 0; i < ciphertext.length(); i++) {
+            ciphertextMatrixElements.get(i / inverseKey.getColumnDimension()).add(ciphertext.charAt(i) - 'A');
         }
 
-        for (int i = 0; i < filledPlaintext.length() / keySize; i++) {
-            Matrix m = new Matrix(1, keySize);
-            List<Integer> elements = plaintextMatrixElements.get(i);
-            for (int j = 0; j < keySize; j++) {
+        for (int i = 0; i < ciphertext.length() / inverseKey.getColumnDimension(); i++) {
+            Matrix m = new Matrix(1, inverseKey.getColumnDimension());
+            List<Integer> elements = ciphertextMatrixElements.get(i);
+            for (int j = 0; j < inverseKey.getColumnDimension(); j++) {
                 m.set(0, j, elements.get(j));
             }
-            plaintextMatrices.put(i, m);
+            ciphertextMatrices.put(i, m);
         }
 
         int row = 0;
         int col = 0;
 
-        for (int i = 0; i < filledPlaintext.length() / keySize; i++) {
-            List<Integer> matrix = plaintextMatrixElements.get(i);
+        for (int i = 0; i < ciphertext.length() / inverseKey.getColumnDimension(); i++) {
+            List<Integer> matrix = ciphertextMatrixElements.get(i);
             for (int j = 0; j < matrix.size(); j++) {
                 TextField tf = new TextField("" + matrix.get(j));
                 tf.setEditable(false);
@@ -134,12 +123,12 @@ public class EncryptionPageTwo extends SceneCreator {
         }
 
         row = 0;
-        col += keySize + 3;
+        col += inverseKey.getColumnDimension() + 3;
 
-        for (int i = 0; i < filledPlaintext.length() / keySize; i++) {
-            for (int j = 0; j < keySize; j++) {
-                for (int k = 0; k < keySize; k++) {
-                    TextField tf = new TextField(key.get(j * keySize + k).getText());
+        for (int i = 0; i < ciphertext.length() / inverseKey.getColumnDimension(); i++) {
+            for (int j = 0; j < inverseKey.getColumnDimension(); j++) {
+                for (int k = 0; k < inverseKey.getColumnDimension(); k++) {
+                    TextField tf = new TextField("" + (int) inverseKey.get(j, k));
                     tf.setEditable(false);
                     tf.setMaxWidth(35);
                     tf.setMaxHeight(30);
@@ -147,34 +136,34 @@ public class EncryptionPageTwo extends SceneCreator {
                 }
                 row++;
             }
-            grid.add(new Label("="), col + keySize + 1, row - keySize, 1, keySize);
+            grid.add(new Label("="), col + inverseKey.getColumnDimension() + 1, row - inverseKey.getColumnDimension(),
+                    1, inverseKey.getColumnDimension());
             row += 2;
         }
 
-        Matrix keyMatrix = EncryptionPageOne.getKeyMatrix(keySize, key);
-
-        for (int i = 0; i < filledPlaintext.length() / keySize; i++) {
-            Matrix m = plaintextMatrices.get(i).times(keyMatrix);
-            ciphertextMatrices.put(i, m);
+        for (int i = 0; i < ciphertext.length() / inverseKey.getColumnDimension(); i++) {
+            Matrix m = ciphertextMatrices.get(i).times(inverseKey);
+            plaintextMatrices.put(i, m);
         }
 
         row = 0;
-        col += keySize + 3;
+        col += inverseKey.getColumnDimension() + 3;
 
-        for (int i = 0; i < filledPlaintext.length() / keySize; i++) {
-            Matrix matrix = ciphertextMatrices.get(i);
-            for (int j = 0; j < keySize; j++) {
+        for (int i = 0; i < ciphertext.length() / inverseKey.getColumnDimension(); i++) {
+            Matrix matrix = plaintextMatrices.get(i);
+            for (int j = 0; j < inverseKey.getColumnDimension(); j++) {
                 TextField tf = new TextField("" + (int) matrix.get(0, j) % 26);
                 tf.setEditable(false);
                 tf.setMaxWidth(35);
                 tf.setMaxHeight(30);
                 String letter = "" + (char) (matrix.get(0, j) % 26 + 'A');
-                ciphertext += letter;
+                plaintext += letter;
                 tf.setTooltip(new Tooltip(letter));
-                grid.add(tf, col + j, row, 1, keySize);
+                grid.add(tf, col + j, row, 1, inverseKey.getColumnDimension());
             }
-            grid.add(new Label("(mod 26)"), col + keySize + 1, row, 1, keySize);
-            row += 2 + keySize;
+            grid.add(new Label("(mod 26)"), col + inverseKey.getColumnDimension() + 1, row, 1,
+                    inverseKey.getColumnDimension());
+            row += 2 + inverseKey.getColumnDimension();
         }
 
         return grid;
@@ -186,21 +175,13 @@ public class EncryptionPageTwo extends SceneCreator {
         grid.setHgap(10);
         grid.setVgap(10);
 
-        grid.add(new Label("Ciphertext:"), 0, 0, 4, 1);
-        TextField ciphertext = new TextField();
-        ciphertext.setEditable(false);
-        ciphertext.setText(this.ciphertext);
-        grid.add(ciphertext, 0, 1, 4, 1);
+        grid.add(new Label("Plaintext:"), 0, 0, 4, 1);
+        TextField plaintext = new TextField();
+        plaintext.setEditable(false);
+        plaintext.setText(this.plaintext);
+        grid.add(plaintext, 0, 1, 4, 1);
 
         return grid;
-    }
-
-    private void fillPlaintext() {
-        filledPlaintext = plaintext;
-        int fillNeeded = plaintext.length() % keySize == 0 ? 0 : keySize - plaintext.length() % keySize;
-        while (fillNeeded-- != 0) {
-            filledPlaintext += fillCharacter;
-        }
     }
 
 }

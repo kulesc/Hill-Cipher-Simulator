@@ -174,7 +174,7 @@ public class EncryptionPageOne extends SceneCreator {
         scene.setRoot(layout);
     }
 
-    private static void limitKeyInput(TextField field, String oldValue, String newValue) {
+    public static void limitKeyInput(TextField field, String oldValue, String newValue) {
         if (!newValue.isEmpty()) {
             try {
                 long value = Integer.parseInt(newValue);
@@ -188,7 +188,7 @@ public class EncryptionPageOne extends SceneCreator {
         }
     }
 
-    private static void limitPlainTextInput(TextField field, String oldValue, String newValue) {
+    public static void limitPlainTextInput(TextField field, String oldValue, String newValue) {
         if (!newValue.isEmpty()) {
             if (newValue.chars().allMatch(Character::isLetter)) {
                 field.setText(newValue.toUpperCase());
