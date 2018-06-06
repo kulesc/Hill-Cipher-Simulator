@@ -1,35 +1,36 @@
-package rs.ac.bg.etf.cryptography.simulators.hillcipher;
+package rs.ac.bg.etf.cryptography.utils;
 
-public class LetterMapping {
-    private String a;
-    private String b;
-    private String c;
-    private String d;
-    private String e;
-    private String f;
-    private String g;
-    private String h;
-    private String i;
-    private String j;
-    private String k;
-    private String l;
-    private String m;
-    private String n;
-    private String o;
-    private String p;
-    private String q;
-    private String r;
-    private String s;
-    private String t;
-    private String u;
-    private String v;
-    private String w;
-    private String x;
-    private String y;
-    private String z;
+public class AlphabetMapping {
+
+    private String a = "0";
+    private String b = "1";
+    private String c = "2";
+    private String d = "3";
+    private String e = "4";
+    private String f = "5";
+    private String g = "6";
+    private String h = "7";
+    private String i = "8";
+    private String j = "9";
+    private String k = "10";
+    private String l = "11";
+    private String m = "12";
+    private String n = "13";
+    private String o = "14";
+    private String p = "15";
+    private String q = "16";
+    private String r = "17";
+    private String s = "18";
+    private String t = "19";
+    private String u = "20";
+    private String v = "21";
+    private String w = "22";
+    private String x = "23";
+    private String y = "24";
+    private String z = "25";
 
     public String getA() {
-        return "0";
+        return a;
     }
 
     public void setA(String a) {
@@ -37,7 +38,7 @@ public class LetterMapping {
     }
 
     public String getB() {
-        return "1";
+        return b;
     }
 
     public void setB(String b) {
@@ -45,7 +46,7 @@ public class LetterMapping {
     }
 
     public String getC() {
-        return "2";
+        return c;
     }
 
     public void setC(String c) {
@@ -53,7 +54,7 @@ public class LetterMapping {
     }
 
     public String getD() {
-        return "3";
+        return d;
     }
 
     public void setD(String d) {
@@ -61,7 +62,7 @@ public class LetterMapping {
     }
 
     public String getE() {
-        return "4";
+        return e;
     }
 
     public void setE(String e) {
@@ -69,7 +70,7 @@ public class LetterMapping {
     }
 
     public String getF() {
-        return "5";
+        return f;
     }
 
     public void setF(String f) {
@@ -77,7 +78,7 @@ public class LetterMapping {
     }
 
     public String getG() {
-        return "6";
+        return g;
     }
 
     public void setG(String g) {
@@ -85,7 +86,7 @@ public class LetterMapping {
     }
 
     public String getH() {
-        return "7";
+        return h;
     }
 
     public void setH(String h) {
@@ -93,7 +94,7 @@ public class LetterMapping {
     }
 
     public String getI() {
-        return "8";
+        return i;
     }
 
     public void setI(String i) {
@@ -101,7 +102,7 @@ public class LetterMapping {
     }
 
     public String getJ() {
-        return "9";
+        return j;
     }
 
     public void setJ(String j) {
@@ -109,7 +110,7 @@ public class LetterMapping {
     }
 
     public String getK() {
-        return "10";
+        return k;
     }
 
     public void setK(String k) {
@@ -117,7 +118,7 @@ public class LetterMapping {
     }
 
     public String getL() {
-        return "11";
+        return l;
     }
 
     public void setL(String l) {
@@ -125,7 +126,7 @@ public class LetterMapping {
     }
 
     public String getM() {
-        return "12";
+        return m;
     }
 
     public void setM(String m) {
@@ -133,7 +134,7 @@ public class LetterMapping {
     }
 
     public String getN() {
-        return "13";
+        return n;
     }
 
     public void setN(String n) {
@@ -141,7 +142,7 @@ public class LetterMapping {
     }
 
     public String getO() {
-        return "14";
+        return o;
     }
 
     public void setO(String o) {
@@ -149,7 +150,7 @@ public class LetterMapping {
     }
 
     public String getP() {
-        return "15";
+        return p;
     }
 
     public void setP(String p) {
@@ -157,7 +158,7 @@ public class LetterMapping {
     }
 
     public String getQ() {
-        return "16";
+        return q;
     }
 
     public void setQ(String q) {
@@ -165,7 +166,7 @@ public class LetterMapping {
     }
 
     public String getR() {
-        return "17";
+        return r;
     }
 
     public void setR(String r) {
@@ -173,7 +174,7 @@ public class LetterMapping {
     }
 
     public String getS() {
-        return "18";
+        return s;
     }
 
     public void setS(String s) {
@@ -181,7 +182,7 @@ public class LetterMapping {
     }
 
     public String getT() {
-        return "19";
+        return t;
     }
 
     public void setT(String t) {
@@ -189,7 +190,7 @@ public class LetterMapping {
     }
 
     public String getU() {
-        return "20";
+        return u;
     }
 
     public void setU(String u) {
@@ -197,7 +198,7 @@ public class LetterMapping {
     }
 
     public String getV() {
-        return "21";
+        return v;
     }
 
     public void setV(String v) {
@@ -205,7 +206,7 @@ public class LetterMapping {
     }
 
     public String getW() {
-        return "22";
+        return w;
     }
 
     public void setW(String w) {
@@ -213,7 +214,7 @@ public class LetterMapping {
     }
 
     public String getX() {
-        return "23";
+        return x;
     }
 
     public void setX(String x) {
@@ -221,7 +222,7 @@ public class LetterMapping {
     }
 
     public String getY() {
-        return "24";
+        return y;
     }
 
     public void setY(String y) {
@@ -229,7 +230,7 @@ public class LetterMapping {
     }
 
     public String getZ() {
-        return "25";
+        return z;
     }
 
     public void setZ(String z) {

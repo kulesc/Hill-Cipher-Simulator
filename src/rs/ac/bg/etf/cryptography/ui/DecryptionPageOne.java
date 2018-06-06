@@ -1,11 +1,10 @@
-package rs.ac.bg.etf.cryptography.simulators.hillcipher;
+package rs.ac.bg.etf.cryptography.ui;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import Jama.Matrix;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -21,29 +20,20 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+import rs.ac.bg.etf.cryptography.controllers.Simulator;
+import rs.ac.bg.etf.cryptography.math.ModuloMatrix;
+import rs.ac.bg.etf.cryptography.simulators.HillCipher;
+import rs.ac.bg.etf.cryptography.utils.UI;
 
-public class DecryptionPageOne extends SceneCreator {
+public class DecryptionPageOne extends Page {
 
     private BorderPane layout;
 
     private Scene scene;
 
-    private TextField ciphertextInput;
-
-    private ComboBox<Integer> keySizeInput;
-
     private List<TextField> key;
 
     private List<TextField> inverseKey;
-
-    private Matrix keyMatrix;
-
-    private ModuloMatrix inverseKeyMatrix;
-
-    public DecryptionPageOne(Stage window) {
-        super(window);
-    }
 
     @Override
     public Scene getScene() {
@@ -71,22 +61,24 @@ public class DecryptionPageOne extends SceneCreator {
         grid.setVgap(10);
         grid.setPrefSize(830, 190);
 
-        grid.add(EncryptionPageOne.generateLetterMappingTable(), 0, 0, 6, 2);
+        grid.add(UI.generateLetterMappingTable(), 0, 0, 6, 2);
 
         grid.add(new Label("Ciphertext:"), 0, 2, 4, 1);
-        ciphertextInput = new TextField();
+        TextField ciphertextInput = new TextField();
         ciphertextInput.setMinWidth(350);
         grid.add(ciphertextInput, 0, 3, 4, 1);
         ciphertextInput.setPromptText("Enter the message to be decrypted...");
-        ciphertextInput.textProperty().addListener((observable, oldValue, newValue) -> EncryptionPageOne
-                .limitPlainTextInput(ciphertextInput, oldValue, newValue));
+        ciphertextInput.textProperty().addListener((observable, oldValue, newValue) -> {
+            UI.limitPlainTextInput(ciphertextInput, oldValue, newValue);
+            Simulator.setCiphertext(ciphertextInput.getText());
+        });
 
         grid.add(new Label("Key size:"), 4, 2, 1, 1);
-        keySizeInput = new ComboBox<>();
+        ComboBox<Integer> keySizeInput = new ComboBox<>();
         keySizeInput.getItems().addAll(IntStream.range(2, 10).mapToObj(i -> i).collect(Collectors.toList()));
         keySizeInput.setMaxWidth(70);
         keySizeInput.getSelectionModel().select(0);
-        keySizeInput.setOnAction(e -> keySizeChanged());
+        keySizeInput.setOnAction(e -> keySizeChanged(keySizeInput.getSelectionModel().getSelectedItem()));
         grid.add(keySizeInput, 4, 3, 1, 1);
 
         layout.getChildren().add(grid);
@@ -101,13 +93,12 @@ public class DecryptionPageOne extends SceneCreator {
         grid.setHgap(10);
         grid.setVgap(10);
 
-        int keySize = keySizeInput.getSelectionModel().getSelectedItem();
         grid.add(new Label("Key"), 0, 0);
 
         key = new ArrayList<>();
 
-        for (int i = 0; i < keySize; i++) {
-            for (int j = 0; j < keySize; j++) {
+        for (int i = 0; i < Simulator.getKeySize(); i++) {
+            for (int j = 0; j < Simulator.getKeySize(); j++) {
                 TextField keyCell = new TextField();
                 keyCell.setMaxWidth(40);
                 keyCell.textProperty().addListener((observable, oldValue, newValue) -> EncryptionPageOne
@@ -117,23 +108,23 @@ public class DecryptionPageOne extends SceneCreator {
             }
         }
 
-        grid.add(new Label("Inverse key"), keySize + 2, 0, 2, 1);
+        grid.add(new Label("Inverse key"), Simulator.getKeySize() + 2, 0, 2, 1);
 
         inverseKey = new ArrayList<>();
 
-        for (int i = 0; i < keySize; i++) {
-            for (int j = 0; j < keySize; j++) {
+        for (int i = 0; i < Simulator.getKeySize(); i++) {
+            for (int j = 0; j < Simulator.getKeySize(); j++) {
                 TextField keyCell = new TextField();
                 keyCell.setMaxWidth(40);
                 keyCell.setEditable(false);
                 inverseKey.add(keyCell);
-                grid.add(keyCell, j + keySize + 2, i + 1);
+                grid.add(keyCell, j + Simulator.getKeySize() + 2, i + 1);
             }
         }
 
         Button generateInverseKey = new Button("Generate Inverse Key");
         generateInverseKey.setOnAction(e -> generateInverseKey());
-        grid.add(generateInverseKey, keySize, 1, 1, keySize);
+        grid.add(generateInverseKey, Simulator.getKeySize(), 1, 1, Simulator.getKeySize());
 
         return grid;
     }
@@ -153,48 +144,36 @@ public class DecryptionPageOne extends SceneCreator {
     }
 
     private void generateInverseKey() {
-
-        int keySize = keySizeInput.getSelectionModel().getSelectedItem();
-
         try {
-            keyMatrix = EncryptionPageOne.getKeyMatrix(keySize, key);
+            ModuloMatrix inverseKeyMatrix = ModuloMatrix
+                    .inverse(new ModuloMatrix(UI.getKeyMatrix(Simulator.getKeySize(), key)));
+            for (int i = 0; i < Simulator.getKeySize(); i++) {
+                for (int j = 0; j < Simulator.getKeySize(); j++) {
+                    inverseKey.get(i * Simulator.getKeySize() + j).setText("" + inverseKeyMatrix.get(i, j));
+                }
+            }
+            Simulator.setInverseKey(inverseKeyMatrix.getMatrix());
         } catch (NumberFormatException e) {
             new Alert(AlertType.WARNING, "The key matrix must not contain empty fields.", ButtonType.OK).showAndWait();
-            return;
-        }
-        if (!keyMatrix.lu().isNonsingular()) {
-            new Alert(AlertType.WARNING, "The key you entered is not invertible.", ButtonType.OK).showAndWait();
-            return;
-        }
-
-        try {
-            inverseKeyMatrix = ModuloMatrix.inverse(new ModuloMatrix(keyMatrix));
         } catch (ArithmeticException e) {
             new Alert(AlertType.WARNING, "The key you entered is not invertible.", ButtonType.OK).showAndWait();
-            return;
-        }
-
-        for (int i = 0; i < keySize; i++) {
-            for (int j = 0; j < keySize; j++) {
-                inverseKey.get(i * keySize + j).setText("" + inverseKeyMatrix.get(i, j));
-            }
         }
     }
 
     private void goToSecondPage() {
-        if (ciphertextInput.getText().isEmpty()) {
+        if (Simulator.getCiphertext().isEmpty()) {
             new Alert(AlertType.WARNING, "Ciphertext must not be empty.", ButtonType.OK).showAndWait();
             return;
         }
-        if (inverseKeyMatrix == null) {
+        if (!UI.isKeyFilled(inverseKey)) {
             new Alert(AlertType.WARNING, "Generate inverse key before proceeding.", ButtonType.OK).showAndWait();
             return;
         }
-        Main.switchScene(
-                new DecryptionPageTwo(window, ciphertextInput.getText(), inverseKeyMatrix.getMatrix()).getScene());
+        UI.switchScene(HillCipher.window, new DecryptionPageTwo().getScene());
     }
 
-    private void keySizeChanged() {
+    private void keySizeChanged(Integer newKeySize) {
+        Simulator.setKeySize(newKeySize);
         layout.setCenter(createCentralLayout());
     }
 }
