@@ -12,8 +12,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import rs.ac.bg.etf.cryptography.controllers.Simulator;
 import rs.ac.bg.etf.cryptography.controllers.Simulator.SimMode;
-import rs.ac.bg.etf.cryptography.simulators.DecryptionPageOne;
-import rs.ac.bg.etf.cryptography.simulators.EncryptionPageOne;
 import rs.ac.bg.etf.cryptography.simulators.HillCipher;
 import rs.ac.bg.etf.cryptography.utils.UI;
 
@@ -24,7 +22,7 @@ public class MainPage extends Page {
         layout.setPadding(new Insets(0, 10, 30, 10));
         layout.setAlignment(Pos.CENTER);
 
-        Button startSimulation = new Button("Start");
+        Button startSimulation = new Button("Start Simulation");
         startSimulation.setOnAction(e -> startSimulation(Simulator.getMode()));
         layout.getChildren().add(startSimulation);
 

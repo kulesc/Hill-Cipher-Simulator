@@ -1,4 +1,4 @@
-package rs.ac.bg.etf.cryptography.simulators;
+package rs.ac.bg.etf.cryptography.ui;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,22 +17,17 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import rs.ac.bg.etf.cryptography.ui.Page;
+import rs.ac.bg.etf.cryptography.controllers.Simulator;
+import rs.ac.bg.etf.cryptography.utils.UI;
 
-public class DecryptionPageTwo extends Page {
-    private String ciphertext;
+public class EncryptionPageTwo extends Page {
 
-    private String plaintext = "";
-
-    private Matrix inverseKey;
-
-    private Map<Integer, List<Integer>> ciphertextMatrixElements = new HashMap<>();
-    private Map<Integer, Matrix> ciphertextMatrices = new HashMap<>();
+    private Map<Integer, List<Integer>> plaintextMatrixElements = new HashMap<>();
     private Map<Integer, Matrix> plaintextMatrices = new HashMap<>();
+    private Map<Integer, Matrix> ciphertextMatrices = new HashMap<>();
 
-    public DecryptionPageTwo(String ciphertext, Matrix inverseKey) {
-        this.ciphertext = ciphertext;
-        this.inverseKey = inverseKey;
+    public EncryptionPageTwo() {
+        Simulator.setPlaintext(UI.fill(Simulator.getPlaintext(), Simulator.getFillCharacter(), Simulator.getKeySize()));
     }
 
     @Override
@@ -59,22 +54,28 @@ public class DecryptionPageTwo extends Page {
         grid.setVgap(10);
         grid.setPrefSize(830, 190);
 
-        grid.add(EncryptionPageOne.generateLetterMappingTable(), 0, 0, 6, 2);
+        grid.add(UI.generateLetterMappingTable(), 0, 0, 6, 2);
 
-        grid.add(new Label("Ciphertext:"), 0, 2, 4, 1);
+        grid.add(new Label("Plaintext:"), 0, 2, 4, 1);
         TextField plaintextInput = new TextField();
         plaintextInput.setMinWidth(350);
-        plaintextInput.setText(ciphertext);
+        plaintextInput.setText(Simulator.getPlaintext());
         plaintextInput.setEditable(false);
         grid.add(plaintextInput, 0, 3, 4, 1);
 
         grid.add(new Label("Key size:"), 4, 2, 1, 1);
         ComboBox<Integer> keySizeInput = new ComboBox<>();
-        keySizeInput.getItems().add(inverseKey.getColumnDimension());
+        keySizeInput.getItems().add(Simulator.getKeySize());
         keySizeInput.setMaxWidth(70);
         keySizeInput.getSelectionModel().select(0);
         grid.add(keySizeInput, 4, 3, 1, 1);
 
+        grid.add(new Label("Fill character:"), 5, 2, 1, 1);
+        ComboBox<String> fillCharacterPicker = new ComboBox<>();
+        grid.add(fillCharacterPicker, 5, 3, 1, 1);
+
+        fillCharacterPicker.getItems().add(Simulator.getFillCharacter());
+        fillCharacterPicker.getSelectionModel().select(Simulator.getFillCharacter());
         layout.getChildren().add(grid);
 
         return layout;
@@ -87,28 +88,28 @@ public class DecryptionPageTwo extends Page {
         grid.setHgap(10);
         grid.setVgap(10);
 
-        for (int i = 0; i < ciphertext.length() / inverseKey.getColumnDimension(); i++) {
-            ciphertextMatrixElements.put(i, new ArrayList<>());
+        for (int i = 0; i < Simulator.getPlaintext().length() / Simulator.getKeySize(); i++) {
+            plaintextMatrixElements.put(i, new ArrayList<>());
         }
 
-        for (int i = 0; i < ciphertext.length(); i++) {
-            ciphertextMatrixElements.get(i / inverseKey.getColumnDimension()).add(ciphertext.charAt(i) - 'A');
+        for (int i = 0; i < Simulator.getPlaintext().length(); i++) {
+            plaintextMatrixElements.get(i / Simulator.getKeySize()).add(Simulator.getPlaintext().charAt(i) - 'A');
         }
 
-        for (int i = 0; i < ciphertext.length() / inverseKey.getColumnDimension(); i++) {
-            Matrix m = new Matrix(1, inverseKey.getColumnDimension());
-            List<Integer> elements = ciphertextMatrixElements.get(i);
-            for (int j = 0; j < inverseKey.getColumnDimension(); j++) {
+        for (int i = 0; i < Simulator.getPlaintext().length() / Simulator.getKeySize(); i++) {
+            Matrix m = new Matrix(1, Simulator.getKeySize());
+            List<Integer> elements = plaintextMatrixElements.get(i);
+            for (int j = 0; j < Simulator.getKeySize(); j++) {
                 m.set(0, j, elements.get(j));
             }
-            ciphertextMatrices.put(i, m);
+            plaintextMatrices.put(i, m);
         }
 
         int row = 0;
         int col = 0;
 
-        for (int i = 0; i < ciphertext.length() / inverseKey.getColumnDimension(); i++) {
-            List<Integer> matrix = ciphertextMatrixElements.get(i);
+        for (int i = 0; i < Simulator.getPlaintext().length() / Simulator.getKeySize(); i++) {
+            List<Integer> matrix = plaintextMatrixElements.get(i);
             for (int j = 0; j < matrix.size(); j++) {
                 TextField tf = new TextField("" + matrix.get(j));
                 tf.setEditable(false);
@@ -122,12 +123,12 @@ public class DecryptionPageTwo extends Page {
         }
 
         row = 0;
-        col += inverseKey.getColumnDimension() + 3;
+        col += Simulator.getKeySize() + 3;
 
-        for (int i = 0; i < ciphertext.length() / inverseKey.getColumnDimension(); i++) {
-            for (int j = 0; j < inverseKey.getColumnDimension(); j++) {
-                for (int k = 0; k < inverseKey.getColumnDimension(); k++) {
-                    TextField tf = new TextField("" + (int) inverseKey.get(j, k));
+        for (int i = 0; i < Simulator.getPlaintext().length() / Simulator.getKeySize(); i++) {
+            for (int j = 0; j < Simulator.getKeySize(); j++) {
+                for (int k = 0; k < Simulator.getKeySize(); k++) {
+                    TextField tf = new TextField("" + (int) Simulator.getKey().get(j, k));
                     tf.setEditable(false);
                     tf.setMaxWidth(35);
                     tf.setMaxHeight(30);
@@ -135,34 +136,35 @@ public class DecryptionPageTwo extends Page {
                 }
                 row++;
             }
-            grid.add(new Label("="), col + inverseKey.getColumnDimension() + 1, row - inverseKey.getColumnDimension(),
-                    1, inverseKey.getColumnDimension());
+            grid.add(new Label("="), col + Simulator.getKeySize() + 1, row - Simulator.getKeySize(), 1,
+                    Simulator.getKeySize());
             row += 2;
         }
 
-        for (int i = 0; i < ciphertext.length() / inverseKey.getColumnDimension(); i++) {
-            Matrix m = ciphertextMatrices.get(i).times(inverseKey);
-            plaintextMatrices.put(i, m);
+        Matrix keyMatrix = Simulator.getKey();
+
+        for (int i = 0; i < Simulator.getPlaintext().length() / Simulator.getKeySize(); i++) {
+            Matrix m = plaintextMatrices.get(i).times(keyMatrix);
+            ciphertextMatrices.put(i, m);
         }
 
         row = 0;
-        col += inverseKey.getColumnDimension() + 3;
+        col += Simulator.getKeySize() + 3;
 
-        for (int i = 0; i < ciphertext.length() / inverseKey.getColumnDimension(); i++) {
-            Matrix matrix = plaintextMatrices.get(i);
-            for (int j = 0; j < inverseKey.getColumnDimension(); j++) {
+        for (int i = 0; i < Simulator.getPlaintext().length() / Simulator.getKeySize(); i++) {
+            Matrix matrix = ciphertextMatrices.get(i);
+            for (int j = 0; j < Simulator.getKeySize(); j++) {
                 TextField tf = new TextField("" + (int) matrix.get(0, j) % 26);
                 tf.setEditable(false);
                 tf.setMaxWidth(35);
                 tf.setMaxHeight(30);
                 String letter = "" + (char) (matrix.get(0, j) % 26 + 'A');
-                plaintext += letter;
+                Simulator.setCiphertext(Simulator.getCiphertext() + letter);
                 tf.setTooltip(new Tooltip(letter));
-                grid.add(tf, col + j, row, 1, inverseKey.getColumnDimension());
+                grid.add(tf, col + j, row, 1, Simulator.getKeySize());
             }
-            grid.add(new Label("(mod 26)"), col + inverseKey.getColumnDimension() + 1, row, 1,
-                    inverseKey.getColumnDimension());
-            row += 2 + inverseKey.getColumnDimension();
+            grid.add(new Label("(mod 26)"), col + Simulator.getKeySize() + 1, row, 1, Simulator.getKeySize());
+            row += 2 + Simulator.getKeySize();
         }
 
         return grid;
@@ -174,11 +176,11 @@ public class DecryptionPageTwo extends Page {
         grid.setHgap(10);
         grid.setVgap(10);
 
-        grid.add(new Label("Plaintext:"), 0, 0, 4, 1);
-        TextField plaintext = new TextField();
-        plaintext.setEditable(false);
-        plaintext.setText(this.plaintext);
-        grid.add(plaintext, 0, 1, 4, 1);
+        grid.add(new Label("Ciphertext:"), 0, 0, 4, 1);
+        TextField ciphertext = new TextField();
+        ciphertext.setEditable(false);
+        ciphertext.setText(Simulator.getCiphertext());
+        grid.add(ciphertext, 0, 1, 4, 1);
 
         return grid;
     }
