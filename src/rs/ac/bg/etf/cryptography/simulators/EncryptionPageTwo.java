@@ -1,4 +1,4 @@
-package rs.ac.bg.etf.cryptography.simulators.hillcipher;
+package rs.ac.bg.etf.cryptography.simulators;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,9 +17,9 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+import rs.ac.bg.etf.cryptography.ui.Page;
 
-public class EncryptionPageTwo extends SceneCreator {
+public class EncryptionPageTwo extends Page {
 
     private Integer keySize;
     private String plaintext;
@@ -31,9 +31,7 @@ public class EncryptionPageTwo extends SceneCreator {
     private Map<Integer, Matrix> ciphertextMatrices = new HashMap<>();
     private List<TextField> key;
 
-    public EncryptionPageTwo(Stage window, String plaintext, Integer keySize, String fillCharacter,
-            List<TextField> key) {
-        super(window);
+    public EncryptionPageTwo(String plaintext, Integer keySize, String fillCharacter, List<TextField> key) {
         this.plaintext = plaintext;
         this.keySize = keySize;
         this.fillCharacter = fillCharacter;
@@ -47,7 +45,7 @@ public class EncryptionPageTwo extends SceneCreator {
         layout.setTop(createTopLayout());
         layout.setCenter(createCentralLayout());
         layout.setBottom(createBottomLayout());
-        
+
         ScrollPane x = new ScrollPane(layout);
         x.setHbarPolicy(ScrollBarPolicy.NEVER);
         x.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);

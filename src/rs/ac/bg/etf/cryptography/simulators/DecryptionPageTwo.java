@@ -1,4 +1,4 @@
-package rs.ac.bg.etf.cryptography.simulators.hillcipher;
+package rs.ac.bg.etf.cryptography.simulators;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,9 +17,9 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+import rs.ac.bg.etf.cryptography.ui.Page;
 
-public class DecryptionPageTwo extends SceneCreator {
+public class DecryptionPageTwo extends Page {
     private String ciphertext;
 
     private String plaintext = "";
@@ -30,8 +30,7 @@ public class DecryptionPageTwo extends SceneCreator {
     private Map<Integer, Matrix> ciphertextMatrices = new HashMap<>();
     private Map<Integer, Matrix> plaintextMatrices = new HashMap<>();
 
-    public DecryptionPageTwo(Stage window, String ciphertext, Matrix inverseKey) {
-        super(window);
+    public DecryptionPageTwo(String ciphertext, Matrix inverseKey) {
         this.ciphertext = ciphertext;
         this.inverseKey = inverseKey;
     }

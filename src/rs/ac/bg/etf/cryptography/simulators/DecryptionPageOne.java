@@ -1,4 +1,4 @@
-package rs.ac.bg.etf.cryptography.simulators.hillcipher;
+package rs.ac.bg.etf.cryptography.simulators;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +21,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+import rs.ac.bg.etf.cryptography.math.ModuloMatrix;
+import rs.ac.bg.etf.cryptography.ui.Page;
+import rs.ac.bg.etf.cryptography.utils.UI;
 
-public class DecryptionPageOne extends SceneCreator {
+public class DecryptionPageOne extends Page {
 
     private BorderPane layout;
 
@@ -40,10 +42,6 @@ public class DecryptionPageOne extends SceneCreator {
     private Matrix keyMatrix;
 
     private ModuloMatrix inverseKeyMatrix;
-
-    public DecryptionPageOne(Stage window) {
-        super(window);
-    }
 
     @Override
     public Scene getScene() {
@@ -190,8 +188,8 @@ public class DecryptionPageOne extends SceneCreator {
             new Alert(AlertType.WARNING, "Generate inverse key before proceeding.", ButtonType.OK).showAndWait();
             return;
         }
-        Main.switchScene(
-                new DecryptionPageTwo(window, ciphertextInput.getText(), inverseKeyMatrix.getMatrix()).getScene());
+        UI.switchScene(HillCipher.window,
+                new DecryptionPageTwo(ciphertextInput.getText(), inverseKeyMatrix.getMatrix()).getScene());
     }
 
     private void keySizeChanged() {

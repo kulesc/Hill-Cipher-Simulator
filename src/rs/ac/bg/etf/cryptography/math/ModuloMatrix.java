@@ -1,4 +1,4 @@
-package rs.ac.bg.etf.cryptography.simulators.hillcipher;
+package rs.ac.bg.etf.cryptography.math;
 
 import java.math.BigInteger;
 

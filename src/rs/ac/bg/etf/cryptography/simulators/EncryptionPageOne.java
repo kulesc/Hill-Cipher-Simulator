@@ -1,4 +1,4 @@
-package rs.ac.bg.etf.cryptography.simulators.hillcipher;
+package rs.ac.bg.etf.cryptography.simulators;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +23,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+import rs.ac.bg.etf.cryptography.ui.Page;
+import rs.ac.bg.etf.cryptography.utils.AlphabetMapping;
+import rs.ac.bg.etf.cryptography.utils.UI;
 
-public class EncryptionPageOne extends SceneCreator {
+public class EncryptionPageOne extends Page {
 
     private ComboBox<Integer> keySizeInput;
 
@@ -38,10 +40,6 @@ public class EncryptionPageOne extends SceneCreator {
     private Scene scene;
 
     private ComboBox<String> fillCharacterPicker;
-
-    public EncryptionPageOne(Stage window) {
-        super(window);
-    }
 
     public String getFillCharacter() {
         return fillCharacterPicker.getSelectionModel().getSelectedItem();
@@ -122,7 +120,7 @@ public class EncryptionPageOne extends SceneCreator {
         grid.add(new Label("Key"), 0, 0);
 
         key = new ArrayList<>();
-        
+
         for (int i = 0; i < keySize; i++) {
             for (int j = 0; j < keySize; j++) {
                 TextField keyCell = new TextField();
@@ -151,17 +149,17 @@ public class EncryptionPageOne extends SceneCreator {
         return grid;
     }
 
-    public static TableView<LetterMapping> generateLetterMappingTable() {
-        TableView<LetterMapping> table = new TableView<>();
+    public static TableView<AlphabetMapping> generateLetterMappingTable() {
+        TableView<AlphabetMapping> table = new TableView<>();
 
         table.getColumns().addAll(IntStream.rangeClosed('A', 'Z').mapToObj(character -> {
             String columnName = "" + (char) character;
-            TableColumn<LetterMapping, String> column = new TableColumn<>(columnName);
-            column.setCellValueFactory(new PropertyValueFactory<LetterMapping, String>(columnName.toLowerCase()));
+            TableColumn<AlphabetMapping, String> column = new TableColumn<>(columnName);
+            column.setCellValueFactory(new PropertyValueFactory<AlphabetMapping, String>(columnName.toLowerCase()));
             return column;
         }).collect(Collectors.toList()));
 
-        table.getItems().add(new LetterMapping());
+        table.getItems().add(new AlphabetMapping());
         table.setFixedCellSize(30);
         table.prefHeightProperty().bind(Bindings.size(table.getItems()).multiply(table.getFixedCellSize()).add(30));
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -238,9 +236,9 @@ public class EncryptionPageOne extends SceneCreator {
             new Alert(AlertType.WARNING, "Key matrix is not ivertible.", ButtonType.OK).showAndWait();
             return;
         }
-        
-        Main.switchScene(new EncryptionPageTwo(Main.window, getPlaintext(), getKeySize(), getFillCharacter(), getKey())
-                .getScene());
+
+        UI.switchScene(HillCipher.window,
+                new EncryptionPageTwo(getPlaintext(), getKeySize(), getFillCharacter(), getKey()).getScene());
     }
 
 }

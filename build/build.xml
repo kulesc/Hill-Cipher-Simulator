@@ -27,7 +27,7 @@
 	
 		<mkdir dir="project" />
 		<copy todir="project">
-			<fileset dir="../">
+			<fileset dir="../../Hill-Cipher-Simulator">
 				<include name="src/**" />
 			</fileset>
 		</copy>
@@ -94,7 +94,7 @@
 	
 		<fx:application id="fxApplication"
 			name="HillCipherSimulator"
-			mainClass="rs.ac.bg.etf.cryptography.simulators.hillcipher.Main"
+			mainClass="rs.ac.bg.etf.cryptography.simulators.HillCipher"
 			toolkit="fx"
 		/>
 	
