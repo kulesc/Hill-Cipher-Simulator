@@ -51,17 +51,6 @@ public class UI {
         return table;
     }
 
-    public static String fill(String text, String fill, int size) {
-        String filled = text;
-        int fillNeeded = text.length() % size == 0 ? 0 : size - text.length() % size;
-
-        while (fillNeeded-- != 0) {
-            filled += fill;
-        }
-
-        return filled;
-    }
-
     public static void limitPlainTextInput(TextField field, String oldValue, String newValue) {
         if (!newValue.isEmpty()) {
             if (newValue.chars().allMatch(Character::isLetter)) {

@@ -18,6 +18,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import rs.ac.bg.etf.cryptography.controllers.Simulator;
+import rs.ac.bg.etf.cryptography.utils.Common;
 import rs.ac.bg.etf.cryptography.utils.UI;
 
 public class EncryptionPageTwo extends Page {
@@ -27,7 +28,8 @@ public class EncryptionPageTwo extends Page {
     private Map<Integer, Matrix> ciphertextMatrices = new HashMap<>();
 
     public EncryptionPageTwo() {
-        Simulator.setPlaintext(UI.fill(Simulator.getPlaintext(), Simulator.getFillCharacter(), Simulator.getKeySize()));
+        Simulator.setPlaintext(
+                Common.fill(Simulator.getPlaintext(), Simulator.getFillCharacter(), Simulator.getKeySize()));
     }
 
     @Override

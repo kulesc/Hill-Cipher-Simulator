@@ -20,6 +20,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import rs.ac.bg.etf.cryptography.controllers.Simulator;
+import rs.ac.bg.etf.cryptography.controllers.Simulator.SimMode;
 import rs.ac.bg.etf.cryptography.math.ModuloMatrix;
 import rs.ac.bg.etf.cryptography.simulators.HillCipher;
 import rs.ac.bg.etf.cryptography.utils.UI;
@@ -57,6 +58,10 @@ public class EncryptionPageOne extends Page {
 
         grid.add(new Label("Plaintext:"), 0, 2, 4, 1);
         TextField plaintextInput = new TextField();
+        plaintextInput.setText(Simulator.getPlaintext());
+        if (Simulator.getMode() == SimMode.TEST) {
+            plaintextInput.setEditable(false);
+        }
         plaintextInput.setMinWidth(350);
         grid.add(plaintextInput, 0, 3, 4, 1);
         plaintextInput.setPromptText("Enter the message to be encrypted...");
@@ -67,10 +72,14 @@ public class EncryptionPageOne extends Page {
 
         grid.add(new Label("Key size:"), 4, 2, 1, 1);
         ComboBox<Integer> keySizeInput = new ComboBox<>();
-        keySizeInput.getItems().addAll(IntStream.range(2, 10).mapToObj(i -> i).collect(Collectors.toList()));
+        if (Simulator.getMode() == SimMode.TEST) {
+            keySizeInput.getItems().add(Simulator.getKeySize());
+        } else {
+            keySizeInput.getItems().addAll(IntStream.range(2, 10).mapToObj(i -> i).collect(Collectors.toList()));
+        }
+
         keySizeInput.setMaxWidth(70);
-        keySizeInput.getSelectionModel().select(0);
-        Simulator.setKeySize(2);
+        keySizeInput.getSelectionModel().select(Simulator.getKeySize());
         keySizeInput.setOnAction(e -> keySizeChanged(keySizeInput.getSelectionModel().getSelectedItem()));
         grid.add(keySizeInput, 4, 3, 1, 1);
 
@@ -78,10 +87,14 @@ public class EncryptionPageOne extends Page {
         ComboBox<String> fillCharacterPicker = new ComboBox<>();
         grid.add(fillCharacterPicker, 5, 3, 1, 1);
 
-        fillCharacterPicker.getItems().addAll(IntStream.rangeClosed('A', 'Z')
-                .mapToObj(character -> "" + (char) character).collect(Collectors.toList()));
-        fillCharacterPicker.getSelectionModel().select("X");
-        Simulator.setFillCharacter("X");
+        if (Simulator.getMode() == SimMode.TEST) {
+            fillCharacterPicker.getItems().add(Simulator.getFillCharacter());
+        } else {
+            fillCharacterPicker.getItems().addAll(IntStream.rangeClosed('A', 'Z')
+                    .mapToObj(character -> "" + (char) character).collect(Collectors.toList()));
+        }
+
+        fillCharacterPicker.getSelectionModel().select(Simulator.getFillCharacter());
 
         layout.getChildren().add(grid);
 
@@ -106,6 +119,10 @@ public class EncryptionPageOne extends Page {
                 keyCell.textProperty()
                         .addListener((observable, oldValue, newValue) -> limitKeyInput(keyCell, oldValue, newValue));
                 key.add(keyCell);
+                if (Simulator.getMode() == SimMode.TEST) {
+                    keyCell.setText("" + (int) Simulator.getKey().get(i, j));
+                    keyCell.setEditable(false);
+                }
                 grid.add(keyCell, j, i + 1);
             }
         }
@@ -118,11 +135,25 @@ public class EncryptionPageOne extends Page {
         grid.setPadding(new Insets(10, 40, 20, 10));
         grid.setHgap(30);
         grid.setVgap(10);
-        grid.setAlignment(Pos.BOTTOM_RIGHT);
 
-        Button encipher = new Button("Encipher");
-        encipher.setOnAction(e -> goToSecondPage());
-        grid.add(encipher, 5, 0, 1, 1);
+        Button button;
+        if (Simulator.getMode() == SimMode.TEST) {
+            grid.add(new Label("Ciphertext:"), 0, 0, 4, 1);
+            TextField ciphertext = new TextField();
+            grid.add(ciphertext, 0, 1, 4, 1);
+            ciphertext.textProperty().addListener((observable, oldValue, newValue) -> {
+                UI.limitPlainTextInput(ciphertext, oldValue, newValue);
+                Simulator.setCiphertextAnswer(ciphertext.getText());
+            });
+
+            button = new Button("Check Solution");
+            grid.add(button, 4, 1, 1, 1);
+        } else {
+            grid.setAlignment(Pos.BOTTOM_RIGHT);
+            button = new Button("Encipher");
+            grid.add(button, 5, 0, 1, 1);
+        }
+        button.setOnAction(e -> goToSecondPage());
 
         return grid;
     }
@@ -157,16 +188,33 @@ public class EncryptionPageOne extends Page {
             return;
         }
 
+        Matrix key = UI.getKeyMatrix(Simulator.getKeySize(), this.key);
         try {
-            Matrix key = UI.getKeyMatrix(Simulator.getKeySize(), this.key);
             ModuloMatrix.inverse(new ModuloMatrix(key));
-            Simulator.setKey(key);
         } catch (ArithmeticException e) {
             new Alert(AlertType.WARNING, "Key matrix is not invertible.", ButtonType.OK).showAndWait();
             return;
         }
 
+        if ((Simulator.getMode() == SimMode.TEST) && Simulator.getCiphertextAnswer().isEmpty()) {
+            new Alert(AlertType.WARNING, "Please fill your answer.", ButtonType.OK).showAndWait();
+            return;
+        }
+
+        if (Simulator.getMode() != SimMode.TEST) {
+            Simulator.setKey(key);
+        }
+
         UI.switchScene(HillCipher.window, new EncryptionPageTwo().getScene());
+        if ((Simulator.getMode() == SimMode.TEST)) {
+            if (Simulator.getCiphertextAnswer().equals(Simulator.getCiphertext())) {
+                new Alert(AlertType.INFORMATION, "Congratulations, correct answer.", ButtonType.OK).showAndWait();
+                return;
+            } else {
+                new Alert(AlertType.ERROR, "Unfortunately the answer is not correct.", ButtonType.OK).showAndWait();
+                return;
+            }
+        }
     }
 
 }

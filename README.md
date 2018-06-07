@@ -29,6 +29,9 @@ Build also supports running the simulator as applet via Java Web Start. To do th
 javaws build/deploy/HillCipherSimulator.jnlp
 ```
 
+### Testing students
+Simulator supports testing knowledge of Hill Cipher algorithm. For more details check out `examples` directory.
+
 ## FAQ
 
 ### Checking Java Version
