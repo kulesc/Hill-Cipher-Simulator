@@ -21,6 +21,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import rs.ac.bg.etf.cryptography.controllers.Simulator;
+import rs.ac.bg.etf.cryptography.controllers.Simulator.SimMode;
 import rs.ac.bg.etf.cryptography.math.ModuloMatrix;
 import rs.ac.bg.etf.cryptography.simulators.HillCipher;
 import rs.ac.bg.etf.cryptography.utils.UI;
@@ -67,6 +68,10 @@ public class DecryptionPageOne extends Page {
         TextField ciphertextInput = new TextField();
         ciphertextInput.setMinWidth(350);
         grid.add(ciphertextInput, 0, 3, 4, 1);
+        if (Simulator.getMode() == SimMode.TEST) {
+            ciphertextInput.setEditable(false);
+            ciphertextInput.setText(Simulator.getCiphertext());
+        }
         ciphertextInput.setPromptText("Enter the message to be decrypted...");
         ciphertextInput.textProperty().addListener((observable, oldValue, newValue) -> {
             UI.limitPlainTextInput(ciphertextInput, oldValue, newValue);
@@ -75,9 +80,13 @@ public class DecryptionPageOne extends Page {
 
         grid.add(new Label("Key size:"), 4, 2, 1, 1);
         ComboBox<Integer> keySizeInput = new ComboBox<>();
-        keySizeInput.getItems().addAll(IntStream.range(2, 10).mapToObj(i -> i).collect(Collectors.toList()));
+        if (Simulator.getMode() == SimMode.TEST) {
+            keySizeInput.getItems().add(Simulator.getKeySize());
+        } else {
+            keySizeInput.getItems().addAll(IntStream.range(2, 10).mapToObj(i -> i).collect(Collectors.toList()));
+        }
         keySizeInput.setMaxWidth(70);
-        keySizeInput.getSelectionModel().select(0);
+        keySizeInput.getSelectionModel().select(Simulator.getKeySize());
         keySizeInput.setOnAction(e -> keySizeChanged(keySizeInput.getSelectionModel().getSelectedItem()));
         grid.add(keySizeInput, 4, 3, 1, 1);
 
@@ -93,21 +102,23 @@ public class DecryptionPageOne extends Page {
         grid.setHgap(10);
         grid.setVgap(10);
 
-        grid.add(new Label("Key"), 0, 0);
+        if (Simulator.getMode() != SimMode.TEST) {
+            grid.add(new Label("Key"), 0, 0);
 
-        key = new ArrayList<>();
+            key = new ArrayList<>();
 
-        for (int i = 0; i < Simulator.getKeySize(); i++) {
-            for (int j = 0; j < Simulator.getKeySize(); j++) {
-                TextField keyCell = new TextField();
-                keyCell.setMaxWidth(40);
-                keyCell.textProperty().addListener((observable, oldValue, newValue) -> EncryptionPageOne
-                        .limitKeyInput(keyCell, oldValue, newValue));
-                key.add(keyCell);
-                grid.add(keyCell, j, i + 1);
+            for (int i = 0; i < Simulator.getKeySize(); i++) {
+                for (int j = 0; j < Simulator.getKeySize(); j++) {
+                    TextField keyCell = new TextField();
+                    keyCell.setMaxWidth(40);
+                    keyCell.textProperty().addListener((observable, oldValue, newValue) -> EncryptionPageOne
+                            .limitKeyInput(keyCell, oldValue, newValue));
+                    key.add(keyCell);
+
+                    grid.add(keyCell, j, i + 1);
+                }
             }
         }
-
         grid.add(new Label("Inverse key"), Simulator.getKeySize() + 2, 0, 2, 1);
 
         inverseKey = new ArrayList<>();
@@ -118,13 +129,18 @@ public class DecryptionPageOne extends Page {
                 keyCell.setMaxWidth(40);
                 keyCell.setEditable(false);
                 inverseKey.add(keyCell);
+                if (Simulator.getMode() == SimMode.TEST) {
+                    keyCell.setText("" + (int) Simulator.getInverseKey().get(i, j));
+                }
                 grid.add(keyCell, j + Simulator.getKeySize() + 2, i + 1);
             }
         }
 
-        Button generateInverseKey = new Button("Generate Inverse Key");
-        generateInverseKey.setOnAction(e -> generateInverseKey());
-        grid.add(generateInverseKey, Simulator.getKeySize(), 1, 1, Simulator.getKeySize());
+        if (Simulator.getMode() != SimMode.TEST) {
+            Button generateInverseKey = new Button("Generate Inverse Key");
+            generateInverseKey.setOnAction(e -> generateInverseKey());
+            grid.add(generateInverseKey, Simulator.getKeySize(), 1, 1, Simulator.getKeySize());
+        }
 
         return grid;
     }
@@ -134,11 +150,25 @@ public class DecryptionPageOne extends Page {
         grid.setPadding(new Insets(10, 10, 10, 10));
         grid.setHgap(10);
         grid.setVgap(10);
-        grid.setAlignment(Pos.BOTTOM_RIGHT);
 
-        Button decipher = new Button("Decipher");
-        decipher.setOnAction(e -> goToSecondPage());
-        grid.add(decipher, 5, 0, 1, 1);
+        Button button;
+        if (Simulator.getMode() == SimMode.TEST) {
+            grid.add(new Label("Plaintext:"), 0, 0, 4, 1);
+            TextField plaintext = new TextField();
+            grid.add(plaintext, 0, 1, 4, 1);
+            plaintext.textProperty().addListener((observable, oldValue, newValue) -> {
+                UI.limitPlainTextInput(plaintext, oldValue, newValue);
+                Simulator.setPlaintextAnswer(plaintext.getText());
+            });
+
+            button = new Button("Check Solution");
+            grid.add(button, 4, 1, 1, 1);
+        } else {
+            grid.setAlignment(Pos.BOTTOM_RIGHT);
+            button = new Button("Decipher");
+            grid.add(button, 5, 0, 1, 1);
+        }
+        button.setOnAction(e -> goToSecondPage());
 
         return grid;
     }
@@ -169,7 +199,21 @@ public class DecryptionPageOne extends Page {
             new Alert(AlertType.WARNING, "Generate inverse key before proceeding.", ButtonType.OK).showAndWait();
             return;
         }
+        if ((Simulator.getMode() == SimMode.TEST) && Simulator.getPlaintextAnswer().isEmpty()) {
+            new Alert(AlertType.WARNING, "Please fill your answer.", ButtonType.OK).showAndWait();
+            return;
+        }
         UI.switchScene(HillCipher.window, new DecryptionPageTwo().getScene());
+
+        if ((Simulator.getMode() == SimMode.TEST)) {
+            if (Simulator.getPlaintextAnswer().equals(Simulator.getPlaintext())) {
+                new Alert(AlertType.INFORMATION, "Congratulations, correct answer.", ButtonType.OK).showAndWait();
+                return;
+            } else {
+                new Alert(AlertType.ERROR, "Unfortunately the answer is not correct.", ButtonType.OK).showAndWait();
+                return;
+            }
+        }
     }
 
     private void keySizeChanged(Integer newKeySize) {

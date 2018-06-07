@@ -21,6 +21,11 @@
 	
 		<copy todir="externalLibs">
 			<fileset dir="../libs">
+				<filename name="gson-2.6.2.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="../libs">
 				<filename name="Jama-1.0.3.jar"/>
 			</fileset>
 		</copy>
@@ -44,6 +49,7 @@
 		<copy todir="build/libs">
 			<fileset dir="externalLibs">
 				<include name="Jama-1.0.3.jar"/>
+				<include name="gson-2.6.2.jar"/>
 			</fileset>
 		</copy>
 	

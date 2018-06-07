@@ -1,0 +1,11 @@
+{
+	"test": "encryption",
+	"plaintext": "ZASTITA",
+	"key_size": 3,
+	"fill": "X",
+	"key": {
+		"0": "3 25 4",
+		"1": "23 6 15",
+		"2": "13 17 21"
+	}
+}

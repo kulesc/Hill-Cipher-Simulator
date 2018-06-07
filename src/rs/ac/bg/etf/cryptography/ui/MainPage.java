@@ -73,9 +73,14 @@ public class MainPage extends Page {
         case DECRYPTION_SIM:
             UI.switchScene(HillCipher.window, new DecryptionPageOne().getScene());
             break;
-        case ENCRYPTION_TEST:
-            break;
-        case DECRYPTION_TEST:
+        case TEST:
+            if (Simulator.loadTestFile()) {
+                if (!Simulator.getPlaintext().isEmpty()) {
+                    UI.switchScene(HillCipher.window, new EncryptionPageOne().getScene());
+                } else {
+                    UI.switchScene(HillCipher.window, new DecryptionPageOne().getScene());
+                }
+            }
             break;
         case ATTACKS:
             break;

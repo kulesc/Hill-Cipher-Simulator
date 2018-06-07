@@ -1,17 +1,29 @@
 package rs.ac.bg.etf.cryptography.controllers;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
+
 import Jama.Matrix;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
+import rs.ac.bg.etf.cryptography.math.ModuloMatrix;
 import rs.ac.bg.etf.cryptography.simulators.HillCipher;
 import rs.ac.bg.etf.cryptography.ui.MainPage;
+import rs.ac.bg.etf.cryptography.utils.Common;
 import rs.ac.bg.etf.cryptography.utils.UI;
 
 public class Simulator {
 
     public static enum SimMode {
-        ENCRYPTION_SIM, DECRYPTION_SIM, ENCRYPTION_TEST, DECRYPTION_TEST, ATTACKS
+        ENCRYPTION_SIM, DECRYPTION_SIM, TEST, ATTACKS
     };
 
     public static Map<SimMode, String> modeLabels;
@@ -30,13 +42,16 @@ public class Simulator {
 
     private static String ciphertext = "";
 
+    private static String plaintextAnswer = "";
+
+    private static String ciphertextAnswer = "";
+
     static {
         modeLabels = new HashMap<>();
         modeLabels.put(SimMode.ATTACKS, "Attacks simulation");
         modeLabels.put(SimMode.DECRYPTION_SIM, "Decryption simulation");
-        modeLabels.put(SimMode.DECRYPTION_TEST, "Decryption test");
+        modeLabels.put(SimMode.TEST, "Test");
         modeLabels.put(SimMode.ENCRYPTION_SIM, "Encryption simulation");
-        modeLabels.put(SimMode.ENCRYPTION_TEST, "Encryption test");
     }
 
     public static SimMode getMode() {
@@ -95,14 +110,72 @@ public class Simulator {
         Simulator.inverseKey = inverseKey;
     }
 
+    public static String getPlaintextAnswer() {
+        return plaintextAnswer;
+    }
+
+    public static void setPlaintextAnswer(String plaintextAnswer) {
+        Simulator.plaintextAnswer = plaintextAnswer;
+    }
+
+    public static String getCiphertextAnswer() {
+        return ciphertextAnswer;
+    }
+
+    public static void setCiphertextAnswer(String ciphertextAnswer) {
+        Simulator.ciphertextAnswer = ciphertextAnswer;
+    }
+
     public static void reset() {
         Simulator.mode = SimMode.ENCRYPTION_SIM;
         UI.switchScene(HillCipher.window, new MainPage().getScene());
         Simulator.key = null;
+        Simulator.inverseKey = null;
         Simulator.plaintext = "";
         Simulator.keySize = 2;
         Simulator.fillCharacter = "X";
         Simulator.ciphertext = "";
+        Simulator.plaintextAnswer = "";
+        Simulator.ciphertextAnswer = "";
+    }
+
+    public static boolean loadTestFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Test File");
+        fileChooser.selectedExtensionFilterProperty().set(new ExtensionFilter("Test files in .json format.", "*.json"));
+        File testFile = fileChooser.showOpenDialog(HillCipher.window);
+
+        try (JsonReader reader = new JsonReader(new FileReader(testFile))) {
+            JsonParser parser = new JsonParser();
+            JsonObject test = parser.parse(new FileReader(testFile)).getAsJsonObject();
+            Simulator.mode = SimMode.TEST;
+            Simulator.keySize = test.get("key_size").getAsInt();
+
+            switch (test.get("test").getAsString()) {
+            case "encryption":
+                Simulator.plaintext = test.get("plaintext").getAsString();
+                Simulator.fillCharacter = test.get("fill").getAsString();
+                Simulator.key = Common.getMatrixFromJson(test.get("key").getAsJsonObject(), Simulator.keySize);
+                break;
+            case "decryption":
+                Simulator.ciphertext = test.get("ciphertext").getAsString();
+                Simulator.inverseKey = Common.getMatrixFromJson(test.get("inverse_key").getAsJsonObject(),
+                        Simulator.keySize);
+                Simulator.key = ModuloMatrix.inverse(new ModuloMatrix(Simulator.inverseKey)).getMatrix();
+                break;
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            return false;
+        } catch (Exception e) {
+            Simulator.reset();
+            return false;
+        }
+
+        return true;
     }
 
 }
