@@ -142,7 +142,7 @@ public class Simulator {
     public static boolean loadTestFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Test File");
-        fileChooser.selectedExtensionFilterProperty().set(new ExtensionFilter("Test files in .json format.", "*.json"));
+        fileChooser.getExtensionFilters().add(new ExtensionFilter("Test files in .json format.", "*.json"));
         File testFile = fileChooser.showOpenDialog(HillCipher.window);
 
         try (JsonReader reader = new JsonReader(new FileReader(testFile))) {
