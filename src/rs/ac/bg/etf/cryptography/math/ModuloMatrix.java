@@ -127,8 +127,32 @@ public class ModuloMatrix {
         return mat;
     }
 
+    public static ModuloMatrix cofactorNoModulo(ModuloMatrix matrix) {
+        ModuloMatrix mat = new ModuloMatrix(matrix.getRowCount(), matrix.getColumnCount());
+        for (int i = 0; i < matrix.getRowCount(); i++) {
+            for (int j = 0; j < matrix.getColumnCount(); j++) {
+                mat.set(i, j,
+                        (revertSign(i).multiply(revertSign(j)).multiply(determinant(createSubMatrix(matrix, i, j)))));
+            }
+        }
+
+        return mat;
+    }
+
+    public static ModuloMatrix adjugate(ModuloMatrix matrix) {
+        return transpose(cofactor(matrix));
+    }
+
+    public static ModuloMatrix adjugateNoModulo(ModuloMatrix matrix) {
+        return transpose(cofactorNoModulo(matrix));
+    }
+
     public static ModuloMatrix inverse(ModuloMatrix matrix) {
         return (transpose(cofactor(matrix)).dc(determinant(matrix)));
+    }
+
+    public static ModuloMatrix inverseNoModulo(ModuloMatrix matrix) {
+        return (transpose(cofactor(matrix)).dcNoModulo(determinant(matrix)));
     }
 
     private ModuloMatrix dc(BigInteger d) {
@@ -136,6 +160,16 @@ public class ModuloMatrix {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 data[i][j] = (data[i][j].multiply(inv)).mod(modulo);
+            }
+        }
+        return this;
+    }
+
+    private ModuloMatrix dcNoModulo(BigInteger d) {
+        BigInteger inv = d.modInverse(modulo);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                data[i][j] = (data[i][j].multiply(inv));
             }
         }
         return this;

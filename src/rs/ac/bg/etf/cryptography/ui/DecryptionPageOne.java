@@ -20,6 +20,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import rs.ac.bg.etf.cryptography.controllers.Simulator;
 import rs.ac.bg.etf.cryptography.controllers.Simulator.SimMode;
 import rs.ac.bg.etf.cryptography.math.ModuloMatrix;
@@ -175,8 +177,8 @@ public class DecryptionPageOne extends Page {
 
     private void generateInverseKey() {
         try {
-            ModuloMatrix inverseKeyMatrix = ModuloMatrix
-                    .inverse(new ModuloMatrix(UI.getKeyMatrix(Simulator.getKeySize(), key)));
+            Simulator.setKey(UI.getKeyMatrix(Simulator.getKeySize(), key));
+            ModuloMatrix inverseKeyMatrix = ModuloMatrix.inverse(new ModuloMatrix(Simulator.getKey()));
             for (int i = 0; i < Simulator.getKeySize(); i++) {
                 for (int j = 0; j < Simulator.getKeySize(); j++) {
                     inverseKey.get(i * Simulator.getKeySize() + j).setText("" + inverseKeyMatrix.get(i, j));
@@ -188,6 +190,13 @@ public class DecryptionPageOne extends Page {
         } catch (ArithmeticException e) {
             new Alert(AlertType.WARNING, "The key you entered is not invertible.", ButtonType.OK).showAndWait();
         }
+
+        Stage dialog = new Stage();
+        dialog.setTitle("Inverse Key Details");
+        dialog.setScene(new InverseKeyDetails(dialog).getScene());
+        dialog.initOwner(HillCipher.window);
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.showAndWait();
     }
 
     private void goToSecondPage() {
