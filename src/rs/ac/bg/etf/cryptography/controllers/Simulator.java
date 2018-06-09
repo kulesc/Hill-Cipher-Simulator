@@ -150,18 +150,16 @@ public class Simulator {
             JsonObject test = parser.parse(new FileReader(testFile)).getAsJsonObject();
             Simulator.mode = SimMode.TEST;
             Simulator.keySize = test.get("key_size").getAsInt();
+            Simulator.key = Common.getMatrixFromJson(test.get("key").getAsJsonObject(), Simulator.keySize);
 
             switch (test.get("test").getAsString()) {
             case "encryption":
                 Simulator.plaintext = test.get("plaintext").getAsString();
                 Simulator.fillCharacter = test.get("fill").getAsString();
-                Simulator.key = Common.getMatrixFromJson(test.get("key").getAsJsonObject(), Simulator.keySize);
                 break;
             case "decryption":
                 Simulator.ciphertext = test.get("ciphertext").getAsString();
-                Simulator.inverseKey = Common.getMatrixFromJson(test.get("inverse_key").getAsJsonObject(),
-                        Simulator.keySize);
-                Simulator.key = ModuloMatrix.inverse(new ModuloMatrix(Simulator.inverseKey)).getMatrix();
+                Simulator.inverseKey = ModuloMatrix.inverse(new ModuloMatrix(Simulator.key)).getMatrix();
                 break;
             }
         } catch (FileNotFoundException e) {

@@ -6,14 +6,17 @@ import java.util.stream.IntStream;
 
 import Jama.Matrix;
 import javafx.beans.binding.Bindings;
+import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import rs.ac.bg.etf.cryptography.math.ModuloMatrix;
 
 public class UI {
 
@@ -75,5 +78,28 @@ public class UI {
         }
 
         return true;
+    }
+
+    public static GridPane getPaneFromMatrix(ModuloMatrix matrix) {
+        int row = 0;
+        int col = 0;
+
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10, 10, 10, 10));
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        for (int i = 0; i < matrix.getColumnCount(); i++) {
+            for (int j = 0; j < matrix.getColumnCount(); j++) {
+                TextField tf = new TextField("" + matrix.get(i, j));
+                tf.setEditable(false);
+                tf.setMaxWidth(50);
+                tf.setMaxHeight(30);
+                grid.add(tf, col + j, row);
+            }
+            row++;
+        }
+
+        return grid;
     }
 }

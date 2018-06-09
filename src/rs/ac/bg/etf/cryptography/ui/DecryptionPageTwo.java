@@ -8,6 +8,7 @@ import java.util.Map;
 import Jama.Matrix;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -16,8 +17,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import rs.ac.bg.etf.cryptography.controllers.Simulator;
+import rs.ac.bg.etf.cryptography.controllers.Simulator.SimMode;
 import rs.ac.bg.etf.cryptography.utils.Common;
 import rs.ac.bg.etf.cryptography.utils.UI;
 
@@ -38,7 +41,7 @@ public class DecryptionPageTwo extends Page {
         layout.setBottom(createBottomLayout());
 
         ScrollPane x = new ScrollPane(layout);
-        x.setHbarPolicy(ScrollBarPolicy.NEVER);
+        x.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
         x.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
         return new Scene(x, 840, 620);
     }
@@ -102,6 +105,12 @@ public class DecryptionPageTwo extends Page {
         int row = 0;
         int col = 0;
 
+        if (Simulator.getMode() == SimMode.TEST) {
+            Button inverseKeyDetails = new Button("Inverse Key Details");
+            inverseKeyDetails.setOnAction(e -> DecryptionPageOne.openKeyDetailsDialog());
+            grid.add(new HBox(inverseKeyDetails), col, row++, Simulator.getKeySize(), 1);
+        }
+
         for (int i = 0; i < Simulator.getCiphertext().length() / Simulator.getKeySize(); i++) {
             List<Integer> matrix = ciphertextMatrixElements.get(i);
             for (int j = 0; j < matrix.size(); j++) {
@@ -116,7 +125,7 @@ public class DecryptionPageTwo extends Page {
             row += 2 + matrix.size();
         }
 
-        row = 0;
+        row = 1;
         col += Simulator.getKeySize() + 3;
 
         for (int i = 0; i < Simulator.getCiphertext().length() / Simulator.getKeySize(); i++) {
@@ -140,7 +149,7 @@ public class DecryptionPageTwo extends Page {
             plaintextMatrices.put(i, m);
         }
 
-        row = 0;
+        row = 1;
         col += Simulator.getKeySize() + 3;
 
         for (int i = 0; i < Simulator.getCiphertext().length() / Simulator.getKeySize(); i++) {
@@ -159,7 +168,7 @@ public class DecryptionPageTwo extends Page {
             row += 2 + Simulator.getKeySize();
         }
 
-        row = 0;
+        row = 1;
         col += Simulator.getKeySize() + 3;
 
         for (int i = 0; i < Simulator.getCiphertext().length() / Simulator.getKeySize(); i++) {
