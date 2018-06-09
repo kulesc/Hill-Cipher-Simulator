@@ -28,4 +28,16 @@ public class Common {
         return matrix;
     }
 
+    public static String getMatrixMultiplication(Matrix a, Matrix b, int row, int column) {
+        StringBuilder product = new StringBuilder();
+
+        for (int i = 0; i < b.getColumnDimension(); i++) {
+            product.append("" + (int) a.get(row, i)).append(" * ").append("" + (int) b.get(i, column));
+            if (i < b.getColumnDimension() - 1) {
+                product.append(" + ");
+            }
+        }
+
+        return product.toString();
+    }
 }

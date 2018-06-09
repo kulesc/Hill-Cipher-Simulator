@@ -203,6 +203,11 @@ public class DecryptionPageOne extends Page {
             new Alert(AlertType.WARNING, "Please fill your answer.", ButtonType.OK).showAndWait();
             return;
         }
+        if (Simulator.getCiphertext().length() % Simulator.getKeySize() != 0) {
+            new Alert(AlertType.WARNING, "Number of characters in ciphertext must be divisible by length of the key.",
+                    ButtonType.OK).showAndWait();
+            return;
+        }
         UI.switchScene(HillCipher.window, new DecryptionPageTwo().getScene());
 
         if ((Simulator.getMode() == SimMode.TEST)) {
