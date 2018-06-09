@@ -18,6 +18,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import rs.ac.bg.etf.cryptography.controllers.Simulator;
+import rs.ac.bg.etf.cryptography.utils.Common;
 import rs.ac.bg.etf.cryptography.utils.UI;
 
 public class DecryptionPageTwo extends Page {
@@ -137,6 +138,25 @@ public class DecryptionPageTwo extends Page {
         for (int i = 0; i < Simulator.getCiphertext().length() / Simulator.getKeySize(); i++) {
             Matrix m = ciphertextMatrices.get(i).times(Simulator.getInverseKey());
             plaintextMatrices.put(i, m);
+        }
+
+        row = 0;
+        col += Simulator.getKeySize() + 3;
+
+        for (int i = 0; i < Simulator.getCiphertext().length() / Simulator.getKeySize(); i++) {
+            Matrix matrix = plaintextMatrices.get(i);
+            Matrix ciphermatrix = ciphertextMatrices.get(i);
+            for (int j = 0; j < Simulator.getKeySize(); j++) {
+                TextField tf = new TextField("" + (int) matrix.get(0, j));
+                tf.setEditable(false);
+                tf.setMaxWidth(50);
+                tf.setMaxHeight(30);
+                tf.setTooltip(
+                        new Tooltip(Common.getMatrixMultiplication(ciphermatrix, Simulator.getInverseKey(), 0, j)));
+                grid.add(tf, col + j, row, 1, Simulator.getKeySize());
+            }
+            grid.add(new Label("="), col + Simulator.getKeySize() + 1, row, 1, Simulator.getKeySize());
+            row += 2 + Simulator.getKeySize();
         }
 
         row = 0;

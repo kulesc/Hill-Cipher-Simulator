@@ -6,11 +6,13 @@ import java.util.stream.IntStream;
 
 import Jama.Matrix;
 import javafx.beans.binding.Bindings;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class UI {
@@ -18,6 +20,9 @@ public class UI {
     public static void switchScene(Stage window, Scene scene) {
         window.setScene(scene);
         window.setResizable(false);
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        window.setX((screenBounds.getWidth() - window.getWidth()) / 2);
+        window.setY((screenBounds.getHeight() - window.getHeight()) / 2);
         window.show();
     }
 

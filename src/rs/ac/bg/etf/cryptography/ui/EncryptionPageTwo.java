@@ -40,7 +40,7 @@ public class EncryptionPageTwo extends Page {
         layout.setBottom(createBottomLayout());
 
         ScrollPane x = new ScrollPane(layout);
-        x.setHbarPolicy(ScrollBarPolicy.NEVER);
+        x.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
         x.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
         return new Scene(x, 840, 620);
     }
@@ -148,6 +148,24 @@ public class EncryptionPageTwo extends Page {
         for (int i = 0; i < Simulator.getPlaintext().length() / Simulator.getKeySize(); i++) {
             Matrix m = plaintextMatrices.get(i).times(keyMatrix);
             ciphertextMatrices.put(i, m);
+        }
+
+        row = 0;
+        col += Simulator.getKeySize() + 3;
+
+        for (int i = 0; i < Simulator.getPlaintext().length() / Simulator.getKeySize(); i++) {
+            Matrix ciphermatrix = ciphertextMatrices.get(i);
+            Matrix plainmatrix = plaintextMatrices.get(i);
+            for (int j = 0; j < Simulator.getKeySize(); j++) {
+                TextField tf = new TextField("" + (int) ciphermatrix.get(0, j));
+                tf.setEditable(false);
+                tf.setMaxWidth(50);
+                tf.setMaxHeight(30);
+                tf.setTooltip(new Tooltip(Common.getMatrixMultiplication(plainmatrix, keyMatrix, 0, j)));
+                grid.add(tf, col + j, row, 1, Simulator.getKeySize());
+            }
+            grid.add(new Label("="), col + Simulator.getKeySize() + 1, row, 1, Simulator.getKeySize());
+            row += 2 + Simulator.getKeySize();
         }
 
         row = 0;
