@@ -15,7 +15,6 @@ public class HillCipher extends Application {
         try {
             HillCipher.window = window;
             window.setTitle(HillCipher.APP_TITLE);
-
             window.setScene(new MainPage().getScene());
             window.show();
         } catch (Exception e) {

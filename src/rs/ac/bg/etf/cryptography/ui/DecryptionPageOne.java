@@ -197,12 +197,16 @@ public class DecryptionPageOne extends Page {
     }
 
     public static void openKeyDetailsDialog() {
-        Stage dialog = new Stage();
-        dialog.setTitle("Inverse Key Details");
-        dialog.setScene(new InverseKeyDetails(dialog).getScene());
-        dialog.initOwner(HillCipher.window);
-        dialog.initModality(Modality.APPLICATION_MODAL);
-        dialog.showAndWait();
+        try {
+            Stage dialog = new Stage();
+            dialog.setTitle("Inverse Key Details");
+            dialog.setScene(new InverseKeyDetails(dialog).getScene());
+            dialog.initOwner(HillCipher.window);
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.showAndWait();
+        } catch (ArithmeticException e) {
+            return;
+        }
     }
 
     private void goToSecondPage() {
