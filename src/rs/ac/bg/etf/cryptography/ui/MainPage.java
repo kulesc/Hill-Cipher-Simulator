@@ -83,6 +83,7 @@ public class MainPage extends Page {
             }
             break;
         case ATTACKS:
+            UI.switchScene(HillCipher.window, new CryptoanalysisPageOne().getScene());
             break;
         }
     }

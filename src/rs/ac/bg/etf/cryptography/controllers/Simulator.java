@@ -48,7 +48,7 @@ public class Simulator {
 
     static {
         modeLabels = new HashMap<>();
-        modeLabels.put(SimMode.ATTACKS, "Attacks simulation");
+        modeLabels.put(SimMode.ATTACKS, "Chosen Plaintext Attack");
         modeLabels.put(SimMode.DECRYPTION_SIM, "Decryption simulation");
         modeLabels.put(SimMode.TEST, "Test");
         modeLabels.put(SimMode.ENCRYPTION_SIM, "Encryption simulation");
@@ -176,4 +176,23 @@ public class Simulator {
         return true;
     }
 
+    private static char getAsciiChar(int x) {
+        return (char) (x + 'A');
+    }
+
+    public static String encrypt(String plaintext, Matrix key) {
+        Matrix matrix = new Matrix(1, plaintext.length());
+        for (int i = 0; i < plaintext.length(); i++) {
+            matrix.set(0, i, plaintext.charAt(i) - 'A');
+        }
+
+        matrix = Common.moduloMatrix(matrix.times(key), 1, plaintext.length());
+
+        StringBuilder ciphertext = new StringBuilder();
+        for (int i = 0; i < plaintext.length(); i++) {
+            ciphertext.append(Character.toString(getAsciiChar((int) matrix.get(0, i))));
+        }
+
+        return ciphertext.toString();
+    }
 }

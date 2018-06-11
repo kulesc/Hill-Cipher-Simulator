@@ -7,13 +7,19 @@ import java.util.stream.IntStream;
 import Jama.Matrix;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import rs.ac.bg.etf.cryptography.math.ModuloMatrix;
@@ -101,5 +107,45 @@ public class UI {
         }
 
         return grid;
+    }
+
+    public static GridPane getPaneFromNumbersWithTooltips(List<Integer> numbers, int rowLength, int collength) {
+        int row = 0;
+        int col = 0;
+
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10, 10, 10, 10));
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        for (int i = 0; i < rowLength; i++) {
+            for (int j = 0; j < collength; j++) {
+                Integer value = numbers.get(i * rowLength + j);
+                String tooltip = "" + (char) (value % 26 + 'A');
+                String text = "" + value;
+                TextField tf = new TextField(text);
+                tf.setTooltip(new Tooltip(tooltip));
+                tf.setEditable(false);
+                tf.setMaxWidth(50);
+                tf.setMaxHeight(30);
+                grid.add(tf, col + j, row);
+            }
+            row++;
+        }
+        grid.alignmentProperty().set(Pos.CENTER);
+
+        return grid;
+    }
+
+    public static StackPane createRectangle(String caption, int width, int height) {
+        Rectangle r = new Rectangle(width, height);
+        r.setFill(Color.TRANSPARENT);
+        r.setFill(Color.GRAY);
+        r.setStroke(Color.GRAY);
+        Text text = new Text(caption);
+        StackPane stack = new StackPane();
+        stack.getChildren().addAll(r, text);
+
+        return stack;
     }
 }
