@@ -43,7 +43,7 @@ public class DecryptionPageTwo extends Page {
         ScrollPane x = new ScrollPane(layout);
         x.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
         x.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-        return new Scene(x, 840, 620);
+        return new Scene(x, 840, 720);
     }
 
     private VBox createTopLayout() {
@@ -110,7 +110,7 @@ public class DecryptionPageTwo extends Page {
             inverseKeyDetails.setOnAction(e -> DecryptionPageOne.openKeyDetailsDialog());
             grid.add(new HBox(inverseKeyDetails), col, row++, Simulator.getKeySize(), 1);
         }
-
+        
         for (int i = 0; i < Simulator.getCiphertext().length() / Simulator.getKeySize(); i++) {
             List<Integer> matrix = ciphertextMatrixElements.get(i);
             for (int j = 0; j < matrix.size(); j++) {
@@ -119,9 +119,9 @@ public class DecryptionPageTwo extends Page {
                 tf.setMaxWidth(35);
                 tf.setMaxHeight(30);
                 tf.setTooltip(new Tooltip("" + (char) (matrix.get(j) + 'A')));
-                grid.add(tf, col + j, row, 1, matrix.size());
+                grid.add(tf, col + j, row, 1, matrix.size() + 1);
             }
-            grid.add(new Label("X"), col + matrix.size() + 1, row, 1, matrix.size());
+            grid.add(new Label("X"), col + matrix.size() + 1, row, 1, matrix.size() + 1);
             row += 2 + matrix.size();
         }
 

@@ -1,5 +1,6 @@
 package rs.ac.bg.etf.cryptography.utils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -109,6 +110,18 @@ public class UI {
         return grid;
     }
 
+    public static GridPane getPaneFromMatrixWithTooltips(Matrix m) {
+        List<Integer> numbers = new ArrayList<>();
+
+        for (int i = 0; i < m.getRowDimension(); i++) {
+            for (int j = 0; j < m.getColumnDimension(); j++) {
+                numbers.add((int) m.get(i, j));
+            }
+        }
+
+        return getPaneFromNumbersWithTooltips(numbers, m.getRowDimension(), m.getColumnDimension());
+    }
+
     public static GridPane getPaneFromNumbersWithTooltips(List<Integer> numbers, int rowLength, int collength) {
         int row = 0;
         int col = 0;
@@ -147,5 +160,19 @@ public class UI {
         stack.getChildren().addAll(r, text);
 
         return stack;
+    }
+
+    public static Matrix getMatrixFromTextFields(List<TextField> rows) {
+        int n = rows.size();
+        Matrix m = new Matrix(n, n);
+
+        for (int i = 0; i < n; i++) {
+            String row = rows.get(i).getText();
+            for (int j = 0; j < row.length(); j++) {
+                m.set(i, j, row.charAt(j) - 'A');
+            }
+        }
+
+        return m;
     }
 }

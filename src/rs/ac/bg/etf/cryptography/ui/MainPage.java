@@ -82,8 +82,11 @@ public class MainPage extends Page {
                 }
             }
             break;
-        case ATTACKS:
+        case CPA_ATTACK:
             UI.switchScene(HillCipher.window, new CryptoanalysisPageOne().getScene());
+            break;
+        case KPA_ATTACK:
+            UI.switchScene(HillCipher.window, new KPAPageOne().getScene());
             break;
         }
     }

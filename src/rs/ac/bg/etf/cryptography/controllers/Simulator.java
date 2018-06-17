@@ -23,7 +23,7 @@ import rs.ac.bg.etf.cryptography.utils.UI;
 public class Simulator {
 
     public static enum SimMode {
-        ENCRYPTION_SIM, DECRYPTION_SIM, TEST, ATTACKS
+        ENCRYPTION_SIM, DECRYPTION_SIM, TEST, CPA_ATTACK, KPA_ATTACK
     };
 
     public static Map<SimMode, String> modeLabels;
@@ -46,12 +46,33 @@ public class Simulator {
 
     private static String ciphertextAnswer = "";
 
+    private static Matrix u;
+
+    private static Matrix w;
+
     static {
         modeLabels = new HashMap<>();
-        modeLabels.put(SimMode.ATTACKS, "Chosen Plaintext Attack");
+        modeLabels.put(SimMode.CPA_ATTACK, "Chosen Plaintext Attack");
         modeLabels.put(SimMode.DECRYPTION_SIM, "Decryption simulation");
         modeLabels.put(SimMode.TEST, "Test");
         modeLabels.put(SimMode.ENCRYPTION_SIM, "Encryption simulation");
+        modeLabels.put(SimMode.KPA_ATTACK, "Known Plaintext Attack");
+    }
+
+    public static Matrix getU() {
+        return u;
+    }
+
+    public static void setU(Matrix u) {
+        Simulator.u = u;
+    }
+
+    public static Matrix getW() {
+        return w;
+    }
+
+    public static void setW(Matrix w) {
+        Simulator.w = w;
     }
 
     public static SimMode getMode() {

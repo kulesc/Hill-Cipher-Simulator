@@ -35,7 +35,7 @@ public class InverseKeyDetails extends Page {
         x.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
         x.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 
-        return new Scene(x, 540, 550);
+        return new Scene(x, 740, 750);
     }
 
     private GridPane createLayout() {
