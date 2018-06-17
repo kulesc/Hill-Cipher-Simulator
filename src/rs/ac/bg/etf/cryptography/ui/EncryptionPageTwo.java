@@ -42,7 +42,7 @@ public class EncryptionPageTwo extends Page {
         ScrollPane x = new ScrollPane(layout);
         x.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
         x.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-        return new Scene(x, 840, 620);
+        return new Scene(x, 840, 720);
     }
 
     private VBox createTopLayout() {
