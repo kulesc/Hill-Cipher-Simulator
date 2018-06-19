@@ -35,7 +35,7 @@ public class InverseKeyDetails extends Page {
         x.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
         x.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 
-        return new Scene(x, 740, 750);
+        return new Scene(x, 640, 760);
     }
 
     private GridPane createLayout() {
@@ -49,7 +49,7 @@ public class InverseKeyDetails extends Page {
         grid.add(new Label("inv(K) = 1 / det(K) * adj(K), det(K) \u2260 0"), 0, row++);
         int det = (int) Simulator.getKey().det();
         TextField detText = new TextField("" + det);
-        detText.setMaxWidth(40);
+        detText.setMaxWidth(100);
         detText.setEditable(false);
         HBox detLabel = new HBox(new Label("First step is to calculate det(K) = "), detText);
         detLabel.setAlignment(Pos.CENTER_LEFT);
